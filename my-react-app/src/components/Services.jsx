@@ -8,6 +8,8 @@ const Services = () => {
     { name: 'Women\'s Perm', price: '$80 UP' },
     { name: 'Highlights', price: '$130 UP' },
     { name: 'Magic Straightening', price: '$150 UP' },
+    { name: 'Magic Straightening', price: '$150 UP' },
+    
   ];
 
   return (

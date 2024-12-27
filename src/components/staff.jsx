@@ -5,6 +5,7 @@ const Staff = () => {
     { name: 'Rachel', role: 'Representative, Lead Hairstylist', email: '' },
     { name: 'Ashley', role: 'Manager, hairstylist', email: '' },
     { name: 'Hannah', role: 'Hairstylist', email: '' },
+    { name: 'Stella', role: 'Hairstylist', email: '' },
   ];
 
   return (
@@ -14,11 +15,7 @@ const Staff = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {staffMembers.map((member, index) => (
             <div key={index} className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
-              <img 
-                src={`/placeholder.svg?height=200&width=200&text=${member.name}`}
-                alt={`${member.name}'s portrait`}
-                className="w-40 h-40 rounded-full mb-4 object-cover"
-              />
+              
               <h3 className="text-xl font-semibold mb-2">{member.name}</h3>
               <p className="text-gray-600 text-center">{member.role}</p>
               {member.email && <p className="text-gray-600 mt-2">{member.email}</p>}

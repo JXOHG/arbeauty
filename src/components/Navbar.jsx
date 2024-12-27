@@ -1,24 +1,51 @@
 import React, { useState } from 'react';
-import { Link } from 'react-scroll';
-import logo from "../images/logo.png"
+import { Link, useLocation } from 'react-router-dom';
+import { Link as ScrollLink } from 'react-scroll';
+import logo from "../images/logo.png";
 
-const Navbar = () => {
+const Navbar = ({ isLoggedIn, onLogout }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
+
+  const NavItem = ({ to, children }) => {
+    if (location.pathname === '/') {
+      return (
+        <ScrollLink
+          to={to}
+          smooth={true}
+          duration={500}
+          className="block cursor-pointer hover:text-gray-300 px-4 md:px-0"
+          onClick={closeMenu}
+        >
+          {children}
+        </ScrollLink>
+      );
+    } else {
+      return (
+        <Link
+          to={`/#${to}`}
+          className="block cursor-pointer hover:text-gray-300 px-4 md:px-0"
+          onClick={closeMenu}
+        >
+          {children}
+        </Link>
+      );
+    }
+  };
+
   return (
-    <nav className="fixed top-0 left-0 w-full bg-black text-white z-50">
+    <nav className="bg-black text-white w-full">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
-          <Link
-            to="home"
-            smooth={true}
-            duration={500}
-            className="flex items-center cursor-pointer"
-          >
+          <Link to="/" className="flex items-center cursor-pointer">
             <img
               src={logo}
               alt="AR Beauty Hair Logo"
@@ -43,17 +70,31 @@ const Navbar = () => {
           <ul className={`md:flex md:space-x-4 ${isMenuOpen ? 'block' : 'hidden'} absolute md:relative top-full left-0 w-full md:w-auto bg-black md:bg-transparent`}>
             {['home', 'services', 'staff', 'location', 'contact'].map((item) => (
               <li key={item} className="py-2 md:py-0">
-                <Link
-                  to={item}
-                  smooth={true}
-                  duration={500}
-                  className="block cursor-pointer hover:text-gray-300 px-4 md:px-0"
-                  onClick={() => setIsMenuOpen(false)}
-                >
+                <NavItem to={item}>
                   {item.charAt(0).toUpperCase() + item.slice(1)}
-                </Link>
+                </NavItem>
               </li>
             ))}
+            {isLoggedIn ? (
+              <>
+                <li className="py-2 md:py-0">
+                  <Link to="/admin" className="block cursor-pointer hover:text-gray-300 px-4 md:px-0" onClick={closeMenu}>
+                    Admin
+                  </Link>
+                </li>
+                <li className="py-2 md:py-0">
+                  <button onClick={() => { onLogout(); closeMenu(); }} className="block cursor-pointer hover:text-gray-300 px-4 md:px-0">
+                    Logout
+                  </button>
+                </li>
+              </>
+            ) : (
+              <li className="py-2 md:py-0">
+                <Link to="/login" className="block cursor-pointer hover:text-gray-300 px-4 md:px-0" onClick={closeMenu}>
+                  Login
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
       </div>

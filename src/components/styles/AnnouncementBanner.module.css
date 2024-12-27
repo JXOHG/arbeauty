@@ -1,0 +1,40 @@
+.announcementContainer {
+    position: relative;
+    width: 100%;
+    height: 1.5em;
+    overflow: hidden;
+  }
+  
+  .announcement {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: translateY(100%);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  
+  .announcement.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  @keyframes slide {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+  
+  .announcement span {
+    display: inline-block;
+    white-space: nowrap;
+    animation: slide 30s linear infinite;
+    padding-left: 100%;
+  }
+  
+  
