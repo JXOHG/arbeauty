@@ -48,10 +48,33 @@ function App() {
   return (
     <>
     <Helmet>
-        {/* Default meta tags for your whole site */}
-        <title>AR BEAUTY</title>
-        <meta name="description" content="Default description" />
+        <title>AR BEAUTY | Professional Beauty Services in Toronto</title>
+        <meta name="description" content="AR BEAUTY offers professional beauty services including makeup, hair styling, and more. Book your appointment today for a luxurious beauty experience." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="keywords" content="beauty salon, makeup, hair styling, Canada beauty services" />
+        <meta property="og:title" content="AR BEAUTY | Professional Beauty Services" />
+        <meta property="og:description" content="Professional beauty services including makeup, hair styling, and more." />
+        <meta property="og:url" content="https://arbeauty.ca" />
+        <link rel="canonical" href="https://arbeauty.ca" />
+        
+        {/* Add structured data */}
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "BeautySalon",
+              "name": "AR BEAUTY",
+              "url": "https://arbeauty.ca",
+              "description": "Professional beauty services including makeup, hair styling, and more",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Toronto",
+                "addressRegion": "ON",
+                "addressCountry": "CA"
+              }
+            }
+          `}
+        </script>
       </Helmet>
     <Router>
       <ScrollToTop />
