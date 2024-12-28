@@ -5,17 +5,21 @@ const Hero = () => {
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 bg-black">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          poster="/black-poster.jpg"
-          className="w-full h-full object-cover"
-        >
-          <source src="/haircut-video.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        <div className="w-full h-full md:flex md:justify-center">
+          <div className="w-full h-full md:w-auto md:h-full">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              poster="/black-poster.jpg"
+              className="w-full h-full object-cover md:object-contain"
+            >
+              <source src="/haircut-video.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
       </div>
       <div className="relative z-10 text-center text-white px-4">
         <h1 className={`text-4xl md:text-5xl font-bold mb-4 ${styles.shadowText}`}>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config';
 
 const AnnouncementManager = () => {
   const [announcement, setAnnouncement] = useState('');
@@ -14,10 +15,10 @@ const AnnouncementManager = () => {
 
   const fetchAnnouncement = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/announcement');
+      const response = await fetch(`${API_URL}/api/announcement`);
       if (response.ok) {
         const data = await response.json();
-        setAnnouncement(data.announcement || '');
+        setAnnouncement(data.text || '');
       }
     } catch (error) {
       console.error('Error fetching announcement:', error);
@@ -27,7 +28,6 @@ const AnnouncementManager = () => {
 
   const handleAnnouncementChange = (e) => {
     setAnnouncement(e.target.value);
-    // Clear any existing messages
     setError('');
     setSuccess('');
   };
@@ -44,7 +44,7 @@ const AnnouncementManager = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:3000/api/announcement', {
+      const response = await fetch(`${API_URL}/api/announcement`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +56,6 @@ const AnnouncementManager = () => {
       if (response.ok) {
         setSuccess('Announcement saved successfully!');
       } else {
-        // Handle different error cases
         if (response.status === 401) {
           localStorage.removeItem('token');
           navigate('/login');
@@ -114,4 +113,3 @@ const AnnouncementManager = () => {
 };
 
 export default AnnouncementManager;
-

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 
 const AnnouncementBanner = () => {
   const [announcement, setAnnouncement] = useState('');
@@ -7,14 +8,13 @@ const AnnouncementBanner = () => {
 
   const fetchAnnouncement = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/announcement');
+      const response = await fetch(`${API_URL}/api/announcement`);
       if (response.ok) {
         const data = await response.json();
-        // Only update if the announcement has changed
         if (data.timestamp !== lastUpdate) {
-          setAnnouncement(data.announcement);
+          setAnnouncement(data.text);
           setLastUpdate(data.timestamp);
-          setIsVisible(!!data.announcement);
+          setIsVisible(!!data.text);
         }
       }
     } catch (error) {
@@ -24,7 +24,6 @@ const AnnouncementBanner = () => {
 
   useEffect(() => {
     fetchAnnouncement();
-    // Check for updates every 5 seconds instead of 30 seconds
     const interval = setInterval(fetchAnnouncement, 5000);
     return () => clearInterval(interval);
   }, [lastUpdate]);
