@@ -11,6 +11,7 @@ import AnnouncementBanner from './components/AnnouncementBanner.jsx';
 import Login from './components/Login.jsx';
 import AnnouncementManager from './components/AnnouncementManager.jsx';
 import './components/styles/animations.css';
+import { Helmet } from 'react-helmet';
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -45,6 +46,13 @@ function App() {
   };
 
   return (
+    <>
+    <Helmet>
+        {/* Default meta tags for your whole site */}
+        <title>AR BEAUTY</title>
+        <meta name="description" content="Default description" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Helmet>
     <Router>
       <ScrollToTop />
       <div className="font-sans bg-white text-black">
@@ -74,6 +82,7 @@ function App() {
         <Footer />
       </div>
     </Router>
+    </>
   );
 }
 
