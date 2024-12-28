@@ -59,22 +59,32 @@ function App() {
         
         {/* Add structured data */}
         <script type="application/ld+json">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "BeautySalon",
-              "name": "AR BEAUTY",
-              "url": "https://arbeauty.ca",
-              "description": "Professional beauty services including makeup, hair styling, and more",
-              "address": {
-                "@type": "PostalAddress",
-                "addressLocality": "Toronto",
-                "addressRegion": "ON",
-                "addressCountry": "CA"
-              }
-            }
-          `}
-        </script>
+  {`
+    {
+      "@context": "https://schema.org",
+      "@type": "BeautySalon",
+      "name": "AR BEAUTY",
+      "url": "https://arbeauty.ca",
+      "description": "Professional beauty services including makeup, hair styling, and more",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Unit 103, 7191 Yonge St.",
+        "addressLocality": "Toronto",
+        "addressRegion": "ON",
+        "postalCode": "L3T 0C4",
+        "addressCountry": "CA"
+      },
+      "openingHours": ["Mo CLOSED", "Tu -We 10:00 AM - 7:00 PM","Th 02:00 PM - 7:00 PM", "Fr 10:00 PM - 7:00 PM", "Sa 10:00 AM - 6:00 PM","Su 10:00 AM - 6:00 PM"],
+      "telephone": "4373654320",
+      "priceRange": "$$",
+      "image": "https://arbeauty.ca/logo.png",
+      "sameAs": [
+        "https://www.instagram.com/arbeauty2309",
+        
+      ]
+    }
+  `}
+</script>
       </Helmet>
     <Router>
       <ScrollToTop />
