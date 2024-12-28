@@ -2,7 +2,7 @@ import React from 'react';
 
 const LocationHours = () => {
   const hours = [
-    { day: 'Monday', time: '10:00AM - 7:00PM' },
+    { day: 'Monday', time: 'CLOSED' },
     { day: 'Tuesday', time: '10:00 AM - 7:00 PM' },
     { day: 'Wednesday', time: '10:00 AM - 7:00 PM' },
     { day: 'Thursday', time: '02:00 PM - 7:00 PM' },
