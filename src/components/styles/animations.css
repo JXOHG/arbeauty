@@ -10,7 +10,21 @@
 .animate-slide {
   display: inline-block;
   white-space: nowrap;
-  animation: slide 30s linear infinite;
+  animation: slide 20s linear infinite;
   padding-left: 100%;
 }
 
+/* Remove the gap between iterations */
+.animate-slide > span {
+  padding-right: 100%;
+  margin-right: -100%;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}

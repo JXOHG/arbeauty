@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../config';
 
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
+const MAKESHIFT_ANNOUNCEMENT = "🎉 Welcome to our new platform! Explore our latest features and let us know what you think. 🚀";
+
 const AnnouncementBanner = () => {
-  const [announcement, setAnnouncement] = useState('');
-  const [isVisible, setIsVisible] = useState(false);
+  const [announcement, setAnnouncement] = useState(IS_DEVELOPMENT ? MAKESHIFT_ANNOUNCEMENT : '');
+  const [isVisible, setIsVisible] = useState(IS_DEVELOPMENT);
   const [lastUpdate, setLastUpdate] = useState(null);
 
   const fetchAnnouncement = async () => {
+    if (IS_DEVELOPMENT) return; // Skip API call in development
+
     try {
       const response = await fetch(`${API_URL}/api/announcement`);
       if (response.ok) {
@@ -23,9 +28,11 @@ const AnnouncementBanner = () => {
   };
 
   useEffect(() => {
-    fetchAnnouncement();
-    const interval = setInterval(fetchAnnouncement, 5000);
-    return () => clearInterval(interval);
+    if (!IS_DEVELOPMENT) {
+      fetchAnnouncement();
+      const interval = setInterval(fetchAnnouncement, 5000);
+      return () => clearInterval(interval);
+    }
   }, [lastUpdate]);
 
   if (!isVisible || !announcement) return null;
@@ -35,7 +42,7 @@ const AnnouncementBanner = () => {
       <div className="container mx-auto">
         <div className="overflow-hidden flex justify-between items-center">
           <div className="animate-slide whitespace-nowrap inline-block">
-            <span className="inline-block px-4">{announcement}</span>
+            <span className="inline-block px-4 text-lg font-bold">{announcement}</span>
           </div>
           <button
             onClick={() => setIsVisible(false)}
@@ -62,3 +69,4 @@ const AnnouncementBanner = () => {
 };
 
 export default AnnouncementBanner;
+

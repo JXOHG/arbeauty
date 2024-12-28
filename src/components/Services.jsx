@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ChevronDown = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -13,7 +14,7 @@ const ChevronUp = () => (
 );
 
 const Services = () => {
-  const [openCategory, setOpenCategory] = useState(null);
+  const [openCategories, setOpenCategories] = useState({});
 
   const servicesByType = {
     'Haircut': [
@@ -53,7 +54,10 @@ const Services = () => {
   };
 
   const toggleCategory = (category) => {
-    setOpenCategory(openCategory === category ? null : category);
+    setOpenCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
   };
 
   return (
@@ -66,30 +70,50 @@ const Services = () => {
               <button
                 className="w-full px-6 py-4 bg-black text-white hover:bg-gray-800 transition-colors duration-200 flex justify-between items-center rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
                 onClick={() => toggleCategory(type)}
-                aria-expanded={openCategory === type}
+                aria-expanded={openCategories[type]}
                 aria-controls={`category-${type}`}
               >
                 <h3 className="text-xl font-semibold">{type}</h3>
-                {openCategory === type ? <ChevronUp /> : <ChevronDown />}
-              </button>
-              {openCategory === type && (
-                <div 
-                  id={`category-${type}`}
-                  className="mt-2 bg-white border border-gray-200 rounded-lg shadow-inner"
+                <motion.div
+                  animate={{ rotate: openCategories[type] ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  {services.map((service, index) => (
+                  <ChevronDown />
+                </motion.div>
+              </button>
+              <AnimatePresence initial={false}>
+                {openCategories[type] && (
+                  <motion.div 
+                    key={`category-${type}`}
+                    initial="collapsed"
+                    animate="open"
+                    exit="collapsed"
+                    variants={{
+                      open: { opacity: 1, height: 'auto' },
+                      collapsed: { opacity: 0, height: 0 }
+                    }}
+                    transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+                    className="overflow-hidden"
+                  >
                     <div 
-                      key={index} 
-                      className={`flex justify-between items-center px-6 py-3 ${
-                        index !== services.length - 1 ? 'border-b border-gray-200' : ''
-                      }`}
+                      id={`category-${type}`}
+                      className="mt-2 bg-white border border-gray-200 rounded-lg shadow-inner"
                     >
-                      <h4 className="text-lg font-medium">{service.name}</h4>
-                      <p className="text-gray-600 font-semibold">{service.price}</p>
+                      {services.map((service, index) => (
+                        <div 
+                          key={index} 
+                          className={`flex justify-between items-center px-6 py-3 ${
+                            index !== services.length - 1 ? 'border-b border-gray-200' : ''
+                          }`}
+                        >
+                          <h4 className="text-lg font-medium">{service.name}</h4>
+                          <p className="text-gray-600 font-semibold">{service.price}</p>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ))}
         </div>
