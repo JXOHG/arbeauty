@@ -42,7 +42,7 @@ const AnnouncementBanner = () => {
       <div className="container mx-auto">
         <div className="overflow-hidden flex justify-between items-center">
           <div className="animate-slide whitespace-nowrap inline-block">
-            <span className="inline-block px-4 text-lg font-bold">{announcement}</span>
+            <span className="inline-block px-4 text-3xl font-bold">{announcement}</span>
           </div>
           <button
             onClick={() => setIsVisible(false)}

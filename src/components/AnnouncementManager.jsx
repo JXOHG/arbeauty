@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../config';
+import GalleryManager from "./GalleryManager"
 
 const AnnouncementManager = () => {
   const [announcement, setAnnouncement] = useState('');
@@ -107,6 +108,8 @@ const AnnouncementManager = () => {
         >
           {loading ? 'Saving...' : 'Save Announcement'}
         </button>
+
+      <GalleryManager/>
       </div>
     </div>
   );

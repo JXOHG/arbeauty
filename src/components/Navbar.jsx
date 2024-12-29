@@ -16,7 +16,7 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
   };
 
   const NavItem = ({ to, children }) => {
-    if (location.pathname === '/') {
+    if (location.pathname === '/' && to !== 'gallery') {
       return (
         <ScrollLink
           to={to}
@@ -31,7 +31,7 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
     } else {
       return (
         <Link
-          to={`/#${to}`}
+          to={to === 'gallery' ? '/gallery' : `/#${to}`}
           className="block cursor-pointer hover:text-gray-300 px-4 md:px-0"
           onClick={closeMenu}
         >
@@ -68,7 +68,7 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
             )}
           </button>
           <ul className={`md:flex md:space-x-4 ${isMenuOpen ? 'block' : 'hidden'} absolute md:relative top-full left-0 w-full md:w-auto bg-black md:bg-transparent`}>
-            {['home', 'services', 'staff', 'location', 'contact'].map((item) => (
+            {['home', 'services', 'staff',  'location', 'contact', 'gallery'].map((item) => (
               <li key={item} className="py-2 md:py-0">
                 <NavItem to={item}>
                   {item.charAt(0).toUpperCase() + item.slice(1)}
