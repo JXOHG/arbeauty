@@ -1,12 +1,21 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import emailjs from '@emailjs/browser';
 import { FaInstagram } from 'react-icons/fa';
 import { SiKakaotalk } from 'react-icons/si';
 import qr from "../images/qr.jpg"
 
+const isMobile = () => window.innerWidth <= 768;
+
 const Contact = () => {
   const form = useRef();
   const [status, setStatus] = useState('');
+  const [isOnMobile, setIsOnMobile] = useState(isMobile());
+
+  useEffect(() => {
+    const handleResize = () => setIsOnMobile(isMobile());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const sendEmail = (e) => {
     e.preventDefault();
@@ -33,7 +42,16 @@ const Contact = () => {
             <p className="mb-4">We'd love to hear from you! Feel free to reach out through any of the following methods:</p>
             <div className="space-y-2">
               <p><strong>Email:</strong> arbeauty2309@gmail.com</p>
-              <p><strong>Phone:</strong> (437) 365-4320</p>
+              <p>
+                <strong>Phone:</strong>{' '}
+                {isOnMobile ? (
+                  <a href="sms:+14373654320" className="text-blue-600 hover:underline">
+                    (437) 365-4320
+                  </a>
+                ) : (
+                  '(437) 365-4320'
+                )}
+              </p>
               <p><strong>KakaoTalk:</strong> arbeauty2309</p>
               <div className="flex items-center space-x-4 mt-4">
                 <a href="https://www.instagram.com/arbeauty2309" target="_blank" rel="noopener noreferrer" className="text-2xl text-black hover:text-gray-700">
