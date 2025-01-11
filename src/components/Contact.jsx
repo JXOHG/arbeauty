@@ -21,7 +21,20 @@ const Contact = () => {
     e.preventDefault();
     setStatus('Sending...');
 
-    emailjs.sendForm('service_kpim5a5', 'template_10fxztq', form.current, '9bd9kd2hoqTtulBVk')
+    // Create a template params object that explicitly includes the reply_to field
+    const templateParams = {
+      user_name: form.current.user_name.value,
+      user_email: form.current.user_email.value,
+      message: form.current.message.value,
+      reply_to: form.current.user_email.value,  // Set reply_to to the client's email
+    };
+
+    emailjs.send(
+      'service_kpim5a5', 
+      'template_10fxztq', 
+      templateParams, 
+      '9bd9kd2hoqTtulBVk'
+    )
       .then((result) => {
         console.log(result.text);
         setStatus('Message sent successfully!');
@@ -93,4 +106,3 @@ const Contact = () => {
 };
 
 export default Contact;
-
