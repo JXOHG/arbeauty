@@ -21,12 +21,14 @@ const Contact = () => {
     e.preventDefault();
     setStatus('Sending...');
 
-    // Create a template params object that explicitly includes the reply_to field
+    // Create a template params object with all required fields
     const templateParams = {
-      user_name: form.current.user_name.value,
+      from_name: form.current.user_name.value,  // Add the name parameter
+      user_name: form.current.user_name.value,  // Include both formats for flexibility
       user_email: form.current.user_email.value,
       message: form.current.message.value,
-      reply_to: form.current.user_email.value,  // Set reply_to to the client's email
+      reply_to: form.current.user_email.value,
+      to_name: 'AR Beauty'  // Optional: Add recipient name
     };
 
     emailjs.send(

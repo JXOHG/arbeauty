@@ -3,12 +3,12 @@ import React from 'react';
 const LocationHours = () => {
   const hours = [
     { day: 'Monday', time: 'CLOSED' },
-    { day: 'Tuesday', time: '10:00 AM - 7:00 PM' },
-    { day: 'Wednesday', time: '10:00 AM - 7:00 PM' },
-    { day: 'Thursday', time: '02:00 PM - 7:00 PM' },
-    { day: 'Friday', time: '10:00 PM - 7:00 PM' },
-    { day: 'Saturday', time: '10:00 AM - 6:00 PM' },
-    { day: 'Sunday', time: '10:00 AM - 6:00 PM' },
+    { day: 'Tuesday', time: '10:30 AM - 7:30 PM' },
+    { day: 'Wednesday', time: '10:30 AM - 7:30 PM' },
+    { day: 'Thursday', time: '02:30 PM - 7:30 PM' },
+    { day: 'Friday', time: '10:30 PM - 7:30 PM' },
+    { day: 'Saturday', time: '10:30 AM - 6:30 PM' },
+    { day: 'Sunday', time: '10:30 AM - 6:30 PM' },
   ];
 
   const mapUrl = "https://maps.app.goo.gl/TtBD6ZsdoMM7RCEa8"
