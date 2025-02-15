@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 
 const LocationHours = () => {
-  const hours = [
+  const [hours, setHours] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const defaultHours = [
     { day: 'Monday', time: 'CLOSED' },
     { day: 'Tuesday', time: '10:30 AM - 7:30 PM' },
     { day: 'Wednesday', time: '10:30 AM - 7:30 PM' },
@@ -11,7 +16,40 @@ const LocationHours = () => {
     { day: 'Sunday', time: '10:30 AM - 6:30 PM' },
   ];
 
-  const mapUrl = "https://maps.app.goo.gl/TtBD6ZsdoMM7RCEa8"
+  useEffect(() => {
+    fetchHours();
+  }, []);
+
+  const fetchHours = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/hours`);
+      if (response.ok) {
+        const data = await response.json();
+        setHours(data);
+      } else {
+        // If backend request fails, use default hours
+        setHours(defaultHours);
+      }
+    } catch (error) {
+      // If there's any error, use default hours
+      setHours(defaultHours);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const mapUrl = "https://maps.app.goo.gl/TtBD6ZsdoMM7RCEa8";
+
+  if (loading) {
+    return (
+      <div className="py-16 md:py-20 bg-white text-center">
+        <div className="container mx-auto px-4">
+          <p>Loading hours...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <section id="location" className="py-16 md:py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -35,7 +73,7 @@ const LocationHours = () => {
             <h3 className="text-xl font-semibold mb-4">Store Hours</h3>
             <ul className="space-y-2">
               {hours.map((item, index) => (
-                <li key={index} className="flex justify-between">
+                <li key={item.id || index} className="flex justify-between">
                   <span className="font-medium">{item.day}:</span>
                   <span>{item.time}</span>
                 </li>
@@ -45,7 +83,6 @@ const LocationHours = () => {
         </div>
         <div className="mt-8">
           <iframe
-        
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2879.5301160143495!2d-79.4206894!3d43.8033624!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b2d7ede834fdf%3A0x62d8a63fd240f8ff!2zQVIgQkVBVVRZIEhBSVIgU0FMT04g66-47Jqp7Iuk!5e0!3m2!1sen!2sca!4v1735239049810!5m2!1sen!2sca"
             width="100%"
             height="300"
@@ -61,4 +98,3 @@ const LocationHours = () => {
 };
 
 export default LocationHours;
-

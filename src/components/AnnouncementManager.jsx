@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../config';
 import GalleryManager from "./GalleryManager"
+import HoursManager from './HoursManager';
 
 const AnnouncementManager = () => {
   const [announcement, setAnnouncement] = useState('');
@@ -110,6 +111,7 @@ const AnnouncementManager = () => {
         </button>
 
       <GalleryManager/>
+      <HoursManager/>
       </div>
     </div>
   );
