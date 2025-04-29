@@ -86,7 +86,7 @@ export const koKR = {
       announcementError: "공지사항 저장에 실패했습니다",
       
       // Services
-      manageServices: "서비스 관리",
+      manageServices: "서비스 관리 (영어로 적으세요)",
       serviceName: "서비스 이름",
       price: "가격",
       addService: "서비스 추가",
@@ -127,7 +127,7 @@ export const koKR = {
       selectImage: "업로드할 이미지를 선택하세요",
       
       // Translation Helper
-      translationHelper: "번역 도우미",
+      translationHelper: "번역 도우미 (Justin 에게 물어보세요)",
       missingTranslations: "누락된 번역",
       categories: "카테고리:",
       services: "서비스:",

@@ -16,7 +16,8 @@ const GalleryManager = () => {
   const [isUploading, setIsUploading] = useState(false)
   const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
   const ALLOWED_FORMATS = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic"]
-  const { t } = useLanguage()
+  const { language, t } = useLanguage()
+  const isKorean = language === "ko-KR"
 
   useEffect(() => {
     fetchImages()
@@ -30,25 +31,29 @@ const GalleryManager = () => {
         setImages(data)
       } else {
         const errorData = await response.json()
-        setError(errorData.error || t("admin.error"))
+        setError(errorData.error || (isKorean ? t("admin.error") : "Failed to fetch images"))
       }
     } catch (error) {
-      setError(t("admin.error"))
+      setError(isKorean ? t("admin.error") : "Error fetching images")
       console.error("Error fetching images:", error)
     }
   }
 
   const validateImage = (file) => {
     if (!file) {
-      throw new Error(t("admin.selectImage"))
+      throw new Error(isKorean ? t("admin.selectImage") : "Please select an image to upload")
     }
 
     if (!ALLOWED_FORMATS.includes(file.type)) {
-      throw new Error(t("admin.fileFormatError"))
+      throw new Error(
+        isKorean
+          ? t("admin.fileFormatError")
+          : "Invalid file format. Please upload a JPG, JPEG, PNG, WebP, or HEIC image"
+      )
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      throw new Error(t("admin.fileSizeError"))
+      throw new Error(isKorean ? t("admin.fileSizeError") : "File size too large. Maximum size is 5MB")
     }
   }
 
@@ -91,22 +96,22 @@ const GalleryManager = () => {
       if (!contentType?.includes("application/json")) {
         const text = await response.text()
         console.error("Non-JSON response:", text)
-        throw new Error(t("admin.error"))
+        throw new Error(isKorean ? t("admin.error") : "Server returned non-JSON response")
       }
 
       const data = await response.json()
 
       if (response.ok) {
-        setSuccess(t("admin.imageUploadSuccess"))
+        setSuccess(isKorean ? t("admin.imageUploadSuccess") : "Image uploaded successfully")
         setNewImage(null)
         setNewImageAlt("")
         fetchImages()
       } else {
-        setError(data.error || t("admin.error"))
+        setError(data.error || (isKorean ? t("admin.error") : "Failed to upload image"))
       }
     } catch (error) {
       console.error("Upload error:", error)
-      setError(error.message || t("admin.error"))
+      setError(error.message || (isKorean ? t("admin.error") : "Error uploading image"))
     } finally {
       setIsUploading(false)
     }
@@ -138,21 +143,21 @@ const GalleryManager = () => {
       })
 
       if (response.ok) {
-        setSuccess(t("admin.imageDeleteSuccess"))
+        setSuccess(isKorean ? t("admin.imageDeleteSuccess") : "Image deleted successfully")
         fetchImages()
       } else {
         const errorData = await response.json()
-        setError(errorData.error || t("admin.error"))
+        setError(errorData.error || (isKorean ? t("admin.error") : "Failed to delete image"))
       }
     } catch (error) {
-      setError(t("admin.error"))
+      setError(isKorean ? t("admin.error") : "Error deleting image")
       console.error("Error deleting image:", error)
     }
   }
 
   return (
     <div className="mt-8 px-4 md:px-8">
-      <h2 className="text-xl font-bold mb-4">{t("admin.manageGallery")}</h2>
+      <h2 className="text-xl font-bold mb-4">{isKorean ? t("admin.manageGallery") : "Manage Gallery"}</h2>
       {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
       {success && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>
@@ -161,7 +166,9 @@ const GalleryManager = () => {
       <form onSubmit={handleImageUpload} className="mb-8">
         <div className="mb-4">
           <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-            {t("admin.uploadImage")} (JPG, JPEG, PNG, WebP, or HEIC, max 5MB)
+            {isKorean
+              ? t("admin.uploadImage") + " (JPG, JPEG, PNG, WebP, or HEIC, max 5MB)"
+              : "Upload New Image (JPG, JPEG, PNG, WebP, or HEIC, max 5MB)"}
           </label>
           <input
             type="file"
@@ -173,7 +180,7 @@ const GalleryManager = () => {
         </div>
         <div className="mb-4">
           <label htmlFor="alt" className="block text-sm font-medium text-gray-700 mb-2">
-            {t("admin.imageDescription")}
+            {isKorean ? t("admin.imageDescription") : "Image Description (Alt Text)"}
           </label>
           <input
             type="text"
@@ -181,7 +188,7 @@ const GalleryManager = () => {
             value={newImageAlt}
             onChange={(e) => setNewImageAlt(e.target.value)}
             className="shadow-sm focus:ring-black focus:border-black block w-full sm:text-sm border-gray-300 rounded-md"
-            placeholder={t("admin.enterImageDescription")}
+            placeholder={isKorean ? t("admin.enterImageDescription") : "Enter a description for the image"}
           />
         </div>
         <button
@@ -194,10 +201,10 @@ const GalleryManager = () => {
           {isUploading ? (
             <>
               <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" />
-              {t("admin.uploadingImage")}
+              {isKorean ? t("admin.uploadingImage") : "Uploading..."}
             </>
           ) : (
-            t("admin.uploadImage")
+            isKorean ? t("admin.uploadImage") : "Upload Image"
           )}
         </button>
       </form>
@@ -216,7 +223,7 @@ const GalleryManager = () => {
                 onClick={() => handleImageDelete(image.id)}
                 className="w-full bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 transition-colors duration-200 flex items-center justify-center"
               >
-                {t("admin.delete")}
+                {isKorean ? t("admin.delete") : "Delete"}
               </button>
             </div>
           </div>

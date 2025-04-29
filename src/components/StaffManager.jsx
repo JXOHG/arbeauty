@@ -12,7 +12,8 @@ const StaffManager = () => {
   const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const { t } = useLanguage()
+  const { language, t } = useLanguage()
+  const isKorean = language === "ko-KR"
 
   useEffect(() => {
     fetchStaff()
@@ -25,10 +26,10 @@ const StaffManager = () => {
         const data = await response.json()
         setStaff(data)
       } else {
-        setError(t("admin.error"))
+        setError(isKorean ? t("admin.error") : "Failed to load staff data")
       }
     } catch (error) {
-      setError(t("admin.error"))
+      setError(isKorean ? t("admin.error") : "Failed to load staff data")
     } finally {
       setLoading(false)
     }
@@ -72,7 +73,11 @@ const StaffManager = () => {
       // Validate that all staff members have at least a name and role
       const isValid = staff.every((member) => member.name.trim() && member.role.trim())
       if (!isValid) {
-        setError(t("admin.staffValidationError"))
+        setError(
+          isKorean
+            ? t("admin.staffValidationError")
+            : "All staff members must have at least a name and role"
+        )
         setSaving(false)
         return
       }
@@ -87,14 +92,14 @@ const StaffManager = () => {
       })
 
       if (response.ok) {
-        setSuccess(t("admin.success"))
+        setSuccess(isKorean ? t("admin.success") : "Staff data updated successfully!")
         fetchStaff() // Refresh the staff after saving
       } else {
         const data = await response.json()
-        setError(data.error || t("admin.error"))
+        setError(data.error || (isKorean ? t("admin.error") : "Failed to update staff data"))
       }
     } catch (error) {
-      setError(t("admin.networkError"))
+      setError(isKorean ? t("admin.networkError") : "Network error. Please try again.")
     } finally {
       setSaving(false)
     }
@@ -103,15 +108,15 @@ const StaffManager = () => {
   if (loading) {
     return (
       <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-4">{t("admin.manageStaff")}</h2>
-        <div className="text-gray-600">{t("admin.loading")}</div>
+        <h2 className="text-2xl font-bold mb-4">{isKorean ? t("admin.manageStaff") : "Manage Staff"}</h2>
+        <div className="text-gray-600">{isKorean ? t("admin.loading") : "Loading staff data..."}</div>
       </div>
     )
   }
 
   return (
     <div className="mt-12">
-      <h2 className="text-2xl font-bold mb-4">{t("admin.manageStaff")}</h2>
+      <h2 className="text-2xl font-bold mb-4">{isKorean ? t("admin.manageStaff") : "Manage Staff"}</h2>
       {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
       {success && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>
@@ -121,41 +126,47 @@ const StaffManager = () => {
           <div key={member.id || index} className="p-4 border rounded-md bg-gray-50">
             <div className="flex justify-between items-center mb-2">
               <h3 className="font-medium">
-                {t("admin.staffMember")} #{index + 1}
+                {isKorean ? t("admin.staffMember") : "Staff Member"} #{index + 1}
               </h3>
               <button onClick={() => removeStaffMember(index)} className="text-red-500 hover:text-red-700">
-                {t("admin.remove")}
+                {isKorean ? t("admin.remove") : "Remove"}
               </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("admin.staffName")}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {isKorean ? t("admin.staffName") : "Name"}
+                </label>
                 <input
                   type="text"
                   value={member.name}
                   onChange={(e) => handleStaffChange(index, "name", e.target.value)}
                   className="w-full p-2 border rounded"
-                  placeholder={t("admin.staffName")}
+                  placeholder={isKorean ? t("admin.staffName") : "Staff name"}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("admin.staffRole")}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {isKorean ? t("admin.staffRole") : "Role"}
+                </label>
                 <input
                   type="text"
                   value={member.role}
                   onChange={(e) => handleStaffChange(index, "role", e.target.value)}
                   className="w-full p-2 border rounded"
-                  placeholder={t("admin.staffRole")}
+                  placeholder={isKorean ? t("admin.staffRole") : "Staff role"}
                 />
               </div>
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">{t("admin.staffEmail")}</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {isKorean ? t("admin.staffEmail") : "Email (optional)"}
+                </label>
                 <input
                   type="email"
                   value={member.email}
                   onChange={(e) => handleStaffChange(index, "email", e.target.value)}
                   className="w-full p-2 border rounded"
-                  placeholder={t("admin.staffEmail")}
+                  placeholder={isKorean ? t("admin.staffEmail") : "Staff email"}
                 />
               </div>
             </div>
@@ -165,7 +176,7 @@ const StaffManager = () => {
           onClick={addStaffMember}
           className="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-md transition-colors duration-200 w-full"
         >
-          + {t("admin.addStaffMember")}
+          + {isKorean ? t("admin.addStaffMember") : "Add Staff Member"}
         </button>
       </div>
       <button
@@ -175,7 +186,13 @@ const StaffManager = () => {
           saving ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
-        {saving ? t("admin.saving") : t("admin.saveStaffData")}
+        {saving
+          ? isKorean
+            ? t("admin.saving")
+            : "Saving..."
+          : isKorean
+          ? t("admin.saveStaffData")
+          : "Save Staff Data"}
       </button>
     </div>
   )

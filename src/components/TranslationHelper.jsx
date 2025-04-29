@@ -10,7 +10,8 @@ const TranslationHelper = () => {
   const [showTemplate, setShowTemplate] = useState(false)
   const [template, setTemplate] = useState("")
   const [loading, setLoading] = useState(true)
-  const { t } = useLanguage()
+  const { language, t } = useLanguage()
+  const isKorean = language === "ko-KR"
 
   useEffect(() => {
     fetchServices()
@@ -84,24 +85,26 @@ const TranslationHelper = () => {
   if (loading) {
     return (
       <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-4">{t("admin.translationHelper")}</h2>
-        <p>{t("admin.loading")}</p>
+        <h2 className="text-2xl font-bold mb-4">{isKorean ? t("admin.translationHelper") : "Translation Helper"}</h2>
+        <p>{isKorean ? t("admin.loading") : "Loading services data..."}</p>
       </div>
     )
   }
 
   return (
     <div className="mt-12">
-      <h2 className="text-2xl font-bold mb-4">{t("admin.translationHelper")}</h2>
+      <h2 className="text-2xl font-bold mb-4">{isKorean ? t("admin.translationHelper") : "Translation Helper"}</h2>
       <div className="p-4 border border-gray-200 rounded-lg">
-        <h3 className="text-xl font-semibold mb-4">{t("admin.translationHelper")}</h3>
+        <h3 className="text-xl font-semibold mb-4">
+          {isKorean ? t("admin.translationHelper") : "Service Translations"}
+        </h3>
 
         <div className="mb-4">
-          <h4 className="font-medium mb-2">{t("admin.missingTranslations")}</h4>
+          <h4 className="font-medium mb-2">{isKorean ? t("admin.missingTranslations") : "Missing Translations"}</h4>
 
           {missingTranslations.categories.length > 0 && (
             <div className="mb-2">
-              <p className="font-medium">{t("admin.categories")}</p>
+              <p className="font-medium">{isKorean ? t("admin.categories") : "Categories:"}</p>
               <ul className="list-disc pl-5">
                 {missingTranslations.categories.map((category) => (
                   <li key={category}>{category}</li>
@@ -112,7 +115,7 @@ const TranslationHelper = () => {
 
           {missingTranslations.services.length > 0 && (
             <div>
-              <p className="font-medium">{t("admin.services")}</p>
+              <p className="font-medium">{isKorean ? t("admin.services") : "Services:"}</p>
               <ul className="list-disc pl-5">
                 {missingTranslations.services.map((service) => (
                   <li key={service}>{service}</li>
@@ -122,7 +125,9 @@ const TranslationHelper = () => {
           )}
 
           {missingTranslations.categories.length === 0 && missingTranslations.services.length === 0 && (
-            <p className="text-green-600">{t("admin.allTranslated")}</p>
+            <p className="text-green-600">
+              {isKorean ? t("admin.allTranslated") : "All services and categories have translations!"}
+            </p>
           )}
         </div>
 
@@ -130,19 +135,23 @@ const TranslationHelper = () => {
           onClick={generateTemplate}
           className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors duration-200"
         >
-          {t("admin.generateTemplate")}
+          {isKorean ? t("admin.generateTemplate") : "Generate Translation Template"}
         </button>
 
         {showTemplate && (
           <div className="mt-4">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="font-medium">{t("admin.translationTemplate")}</h4>
+              <h4 className="font-medium">{isKorean ? t("admin.translationTemplate") : "Translation Template"}</h4>
               <button onClick={copyToClipboard} className="text-sm bg-gray-200 px-2 py-1 rounded hover:bg-gray-300">
-                {t("admin.copy")}
+                {isKorean ? t("admin.copy") : "Copy"}
               </button>
             </div>
             <pre className="bg-gray-100 p-4 rounded-md overflow-auto max-h-96 text-sm">{template}</pre>
-            <p className="mt-2 text-sm text-gray-600">{t("admin.updateInstructions")}</p>
+            <p className="mt-2 text-sm text-gray-600">
+              {isKorean
+                ? t("admin.updateInstructions")
+                : "Copy this template, fill in the Korean translations, and update the services-ko.js file."}
+            </p>
           </div>
         )}
       </div>

@@ -11,11 +11,12 @@ const ServicesManager = () => {
   const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const { t } = useLanguage()
+  const { language, t } = useLanguage()
+  const isKorean = language === "ko-KR"
 
   useEffect(() => {
     fetchServices()
-  }, [])
+  }, [language])
 
   const fetchServices = async () => {
     try {
@@ -26,7 +27,7 @@ const ServicesManager = () => {
       }
     } catch (error) {
       console.error("Error fetching services:", error)
-      setError(t("admin.error"))
+      setError(isKorean ? t("admin.error") : "Failed to load services")
     }
   }
 
@@ -60,7 +61,7 @@ const ServicesManager = () => {
   }
 
   const deleteService = (category, index) => {
-    if (window.confirm(t("admin.deleteServiceConfirm"))) {
+    if (window.confirm(isKorean ? t("admin.deleteServiceConfirm") : "Are you sure you want to delete this service?")) {
       setServices((prev) => {
         const updatedCategory = [...prev[category]]
         updatedCategory.splice(index, 1)
@@ -83,7 +84,11 @@ const ServicesManager = () => {
   }
 
   const deleteCategory = (category) => {
-    if (window.confirm(t("admin.deleteCategoryConfirm").replace("{category}", category))) {
+    const confirmMessage = isKorean
+      ? t("admin.deleteCategoryConfirm").replace("{category}", category)
+      : `Are you sure you want to delete the entire "${category}" category and all its services?`
+    
+    if (window.confirm(confirmMessage)) {
       setServices((prev) => {
         const newServices = { ...prev }
         delete newServices[category]
@@ -95,7 +100,7 @@ const ServicesManager = () => {
   }
 
   const addNewCategory = () => {
-    const categoryName = prompt(t("admin.enterCategoryName"))
+    const categoryName = prompt(isKorean ? t("admin.enterCategoryName") : "Enter new category name:")
     if (categoryName && categoryName.trim() !== "") {
       setServices((prev) => ({
         ...prev,
@@ -126,18 +131,18 @@ const ServicesManager = () => {
       })
 
       if (response.ok) {
-        setSuccess(t("admin.servicesSuccess"))
+        setSuccess(isKorean ? t("admin.servicesSuccess") : "Services saved successfully!")
       } else {
         if (response.status === 401) {
           localStorage.removeItem("token")
           navigate("/login")
         } else {
           const data = await response.json()
-          setError(data.error || t("admin.error"))
+          setError(data.error || (isKorean ? t("admin.error") : "Failed to save services"))
         }
       }
     } catch (error) {
-      setError(t("admin.networkError"))
+      setError(isKorean ? t("admin.networkError") : "Network error. Please try again.")
     } finally {
       setLoading(false)
     }
@@ -145,7 +150,7 @@ const ServicesManager = () => {
 
   return (
     <div className="mt-12">
-      <h2 className="text-2xl font-bold mb-4">{t("admin.manageServices")}</h2>
+      <h2 className="text-2xl font-bold mb-4">{isKorean ? t("admin.manageServices") : "Manage Services"}</h2>
       {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
       {success && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>
@@ -158,7 +163,7 @@ const ServicesManager = () => {
             <button
               onClick={() => deleteCategory(category)}
               className="text-red-600 hover:text-red-800 transition-colors duration-200"
-              title={t("admin.deleteCategory")}
+              title={isKorean ? t("admin.deleteCategory") : "Delete category"}
             >
               🗑️
             </button>
@@ -171,19 +176,19 @@ const ServicesManager = () => {
                 value={service.name}
                 onChange={(e) => handleServiceChange(category, index, "name", e.target.value)}
                 className="flex-1 shadow-sm focus:ring-black focus:border-black block sm:text-sm border-gray-300 rounded-md"
-                placeholder={t("admin.serviceName")}
+                placeholder={isKorean ? t("admin.serviceName") : "Service name"}
               />
               <input
                 type="text"
                 value={service.price}
                 onChange={(e) => handleServiceChange(category, index, "price", e.target.value)}
                 className="w-40 shadow-sm focus:ring-black focus:border-black block sm:text-sm border-gray-300 rounded-md"
-                placeholder={t("admin.price")}
+                placeholder={isKorean ? t("admin.price") : "Price"}
               />
               <button
                 onClick={() => deleteService(category, index)}
                 className="text-red-600 hover:text-red-800 transition-colors duration-200"
-                title={t("admin.deleteService")}
+                title={isKorean ? t("admin.deleteService") : "Delete service"}
               >
                 ✕
               </button>
@@ -194,7 +199,7 @@ const ServicesManager = () => {
             onClick={() => addNewService(category)}
             className="mt-2 text-black border border-black px-3 py-1 rounded-md hover:bg-gray-100 transition-colors duration-200"
           >
-            + {t("admin.addService")}
+            + {isKorean ? t("admin.addService") : "Add Service"}
           </button>
         </div>
       ))}
@@ -204,7 +209,7 @@ const ServicesManager = () => {
           onClick={addNewCategory}
           className="bg-gray-200 text-black px-4 py-2 rounded-md hover:bg-gray-300 transition-colors duration-200"
         >
-          + {t("admin.addCategory")}
+          + {isKorean ? t("admin.addCategory") : "Add New Category"}
         </button>
       </div>
 
@@ -215,7 +220,7 @@ const ServicesManager = () => {
           loading ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
-        {loading ? t("admin.saving") : t("admin.saveServices")}
+        {loading ? (isKorean ? t("admin.saving") : "Saving...") : isKorean ? t("admin.saveServices") : "Save Services"}
       </button>
     </div>
   )

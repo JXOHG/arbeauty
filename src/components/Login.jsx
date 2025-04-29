@@ -8,7 +8,8 @@ const Login = ({ onLogin }) => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-  const { t } = useLanguage()
+  const { language, t } = useLanguage()
+  const isKorean = language === "ko-KR"
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -23,10 +24,10 @@ const Login = ({ onLogin }) => {
         localStorage.setItem("token", accessToken)
         onLogin()
       } else {
-        setError(t("admin.invalidCredentials"))
+        setError(isKorean ? t("admin.invalidCredentials") : "Invalid username or password")
       }
     } catch (err) {
-      setError(t("admin.loginError"))
+      setError(isKorean ? t("admin.loginError") : "An error occurred. Please try again.")
     }
   }
 
@@ -34,14 +35,16 @@ const Login = ({ onLogin }) => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">{t("admin.loginTitle")}</h2>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            {isKorean ? t("admin.loginTitle") : "Admin Login"}
+          </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" value="true" />
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="username" className="sr-only">
-                {t("admin.username")}
+                {isKorean ? t("admin.username") : "Username"}
               </label>
               <input
                 id="username"
@@ -49,14 +52,14 @@ const Login = ({ onLogin }) => {
                 type="text"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm"
-                placeholder={t("admin.username")}
+                placeholder={isKorean ? t("admin.username") : "Username"}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
-                {t("admin.password")}
+                {isKorean ? t("admin.password") : "Password"}
               </label>
               <input
                 id="password"
@@ -64,7 +67,7 @@ const Login = ({ onLogin }) => {
                 type="password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm"
-                placeholder={t("admin.password")}
+                placeholder={isKorean ? t("admin.password") : "Password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -78,7 +81,7 @@ const Login = ({ onLogin }) => {
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
             >
-              {t("admin.signIn")}
+              {isKorean ? t("admin.signIn") : "Sign in"}
             </button>
           </div>
         </form>

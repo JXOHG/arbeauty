@@ -12,7 +12,8 @@ const HoursManager = () => {
   const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const { t } = useLanguage()
+  const { language, t } = useLanguage()
+  const isKorean = language === "ko-KR"
 
   useEffect(() => {
     fetchHours()
@@ -25,10 +26,10 @@ const HoursManager = () => {
         const data = await response.json()
         setHours(data)
       } else {
-        setError(t("admin.error"))
+        setError(isKorean ? t("admin.error") : "Failed to load store hours")
       }
     } catch (error) {
-      setError(t("admin.error"))
+      setError(isKorean ? t("admin.error") : "Failed to load store hours")
     } finally {
       setLoading(false)
     }
@@ -67,14 +68,14 @@ const HoursManager = () => {
       })
 
       if (response.ok) {
-        setSuccess(t("admin.hoursSuccess"))
+        setSuccess(isKorean ? t("admin.hoursSuccess") : "Store hours updated successfully!")
         fetchHours() // Refresh the hours after saving
       } else {
         const data = await response.json()
-        setError(data.error || t("admin.error"))
+        setError(data.error || (isKorean ? t("admin.error") : "Failed to update store hours"))
       }
     } catch (error) {
-      setError(t("admin.networkError"))
+      setError(isKorean ? t("admin.networkError") : "Network error. Please try again.")
     } finally {
       setSaving(false)
     }
@@ -83,15 +84,15 @@ const HoursManager = () => {
   if (loading) {
     return (
       <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-4">{t("admin.manageHours")}</h2>
-        <div className="text-gray-600">{t("admin.loading")}</div>
+        <h2 className="text-2xl font-bold mb-4">{isKorean ? t("admin.manageHours") : "Manage Store Hours"}</h2>
+        <div className="text-gray-600">{isKorean ? t("admin.loading") : "Loading store hours..."}</div>
       </div>
     )
   }
 
   return (
     <div className="mt-12">
-      <h2 className="text-2xl font-bold mb-4">{t("admin.manageHours")}</h2>
+      <h2 className="text-2xl font-bold mb-4">{isKorean ? t("admin.manageHours") : "Manage Store Hours"}</h2>
       {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
       {success && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>
@@ -121,7 +122,7 @@ const HoursManager = () => {
           saving ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
-        {saving ? t("admin.saving") : t("admin.saveHours")}
+        {saving ? (isKorean ? t("admin.saving") : "Saving...") : isKorean ? t("admin.saveHours") : "Save Store Hours"}
       </button>
     </div>
   )

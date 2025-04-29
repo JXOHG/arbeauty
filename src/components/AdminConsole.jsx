@@ -16,7 +16,8 @@ const AnnouncementManager = () => {
   const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const { t } = useLanguage()
+  const { language, t } = useLanguage()
+  const isKorean = language === "ko-KR"
 
   useEffect(() => {
     fetchAnnouncement()
@@ -31,7 +32,7 @@ const AnnouncementManager = () => {
       }
     } catch (error) {
       console.error("Error fetching announcement:", error)
-      setError(t("admin.error"))
+      setError(isKorean ? t("admin.error") : "Failed to load current announcement")
     }
   }
 
@@ -63,18 +64,18 @@ const AnnouncementManager = () => {
       })
 
       if (response.ok) {
-        setSuccess(t("admin.announcementSuccess"))
+        setSuccess(isKorean ? t("admin.announcementSuccess") : "Announcement saved successfully!")
       } else {
         if (response.status === 401) {
           localStorage.removeItem("token")
           navigate("/login")
         } else {
           const data = await response.json()
-          setError(data.error || t("admin.announcementError"))
+          setError(data.error || (isKorean ? t("admin.announcementError") : "Failed to save announcement"))
         }
       }
     } catch (error) {
-      setError(t("admin.networkError"))
+      setError(isKorean ? t("admin.networkError") : "Network error. Please try again.")
     } finally {
       setLoading(false)
     }
@@ -83,14 +84,14 @@ const AnnouncementManager = () => {
   return (
     <div className="container mx-auto px-4 py-8 pt-24">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mb-4">{t("admin.manageAnnouncement")}</h1>
+        <h1 className="text-2xl font-bold mb-4">{isKorean ? t("admin.manageAnnouncement") : "Manage Announcement"}</h1>
         {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
         {success && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>
         )}
         <div className="mb-4">
           <label htmlFor="announcement" className="block text-sm font-medium text-gray-700 mb-2">
-            {t("admin.announcementText")}
+            {isKorean ? t("admin.announcementText") : "Announcement Text"}
           </label>
           <textarea
             id="announcement"
@@ -98,7 +99,7 @@ const AnnouncementManager = () => {
             className="shadow-sm focus:ring-black focus:border-black block w-full sm:text-sm border-gray-300 rounded-md"
             value={announcement}
             onChange={handleAnnouncementChange}
-            placeholder={t("admin.enterAnnouncement")}
+            placeholder={isKorean ? t("admin.enterAnnouncement") : "Enter your announcement here..."}
           ></textarea>
         </div>
         <button
@@ -108,7 +109,13 @@ const AnnouncementManager = () => {
             loading ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >
-          {loading ? t("admin.saving") : t("admin.saveAnnouncement")}
+          {loading
+            ? isKorean
+              ? t("admin.saving")
+              : "Saving..."
+            : isKorean
+            ? t("admin.saveAnnouncement")
+            : "Save Announcement"}
         </button>
 
         <GalleryManager />
