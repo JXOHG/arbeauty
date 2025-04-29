@@ -12,7 +12,7 @@ export const koKR = {
     },
     hero: {
       welcome: "AR 뷰티 헤어 살롱에 오신 것을 환영합니다",
-      experience: "증강 현실 뷰티와 스타일을 경험해보세요",
+      experience: "AR Beauty만의 스타일을 경험해보세요",
     },
     services: {
       title: "서비스 안내",
