@@ -1,0 +1,40 @@
+export const servicesKo = {
+    "categories": {
+      "Haircut": "헤어컷",
+      "Perm & Straightening": "펌 & 매직",
+      "Colour": "염색",
+      "Hair Services": "헤어 서비스"
+    },
+    "services": {
+      "Men's Haircut": "남성 커트",
+      "Men's Fade/leaf/wolf cut": "남성 페이드/리프컷/울프컷",
+      "Men's Long cut": "남성 장발 커트",
+      "Women's Haircut": "여성 커트",
+      "Women's Bang": "앞머리 커트",
+      "Men's Perm": "남성 일반 펌",
+      "Women's Perm": "여성 일반 펌",
+      "Men's Hippie Perm": "남성 히피펌",
+      "Women's Hippie Perm": "여성 히피펌",
+      "Iron Perm": "아이론 펌",
+      "Spiral Perm": "스파이럴 펌",
+      "Keratin Magic Straightening": "케라틴 매직",
+      "Men's Down Perm": "다운펌",
+      "Digital Perm": "디지털 펌",
+      "Root Perm": "뿌리펌",
+      "Magic Setting Perm": "매직셋팅",
+      "Magic Straightening": "매직 스트레이트",
+      "Highlight (full)": "전체 하이라이트",
+      "Highlight (partial)": "부분 하이라이트",
+      "Men's Root Colour": "남성 뿌리 염색",
+      "Women's Root Colour": "여성 뿌리 염색",
+      "Full Hair Lightening": "전체 탈색",
+      "Men's Full Colour": "남성 전체 염색",
+      "Women's Full Colour": "여성 전체 염색",
+      "Balayage & Ombre": "발레아쥬 & 옴브레",
+      "Secret two-tone": "시크릿 투톤",
+      "Toning": "헤어 토닝",
+      "Hair Treatment": "헤어 트리트먼트",
+      "Scalp Treatment": "두피 케어",
+      "Shampoo and Dry": "샴푸 & 드라이"
+    }
+  }

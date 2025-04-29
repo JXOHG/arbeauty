@@ -1,65 +1,74 @@
-import React, { useState, useEffect } from 'react';
-import { HashRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
-import Navbar from './components/Navbar.jsx';
-import Hero from './components/Hero.jsx';
-import Services from './components/Services.jsx';
-import Staff from './components/staff.jsx';
-import LocationHours from './components/LocationHours.jsx';
-import Contact from './components/Contact.jsx';
-import Footer from './components/Footer.jsx';
-import AnnouncementBanner from './components/AnnouncementBanner.jsx';
-import Login from './components/Login.jsx';
-import AnnouncementManager from './components/AnnouncementManager.jsx';
-import GalleryManager from "./components/GalleryManager.jsx";
-import Gallery from './components/Gallery';
+"use client"
 
-import './components/styles/animations.css';
-import { Helmet } from 'react-helmet';
+import { useState, useEffect } from "react"
+import { HashRouter as Router, Route, Routes, Navigate, useLocation } from "react-router-dom"
+import Navbar from "./components/Navbar.jsx"
+import Hero from "./components/Hero.jsx"
+import Services from "./components/Services.jsx"
+import Staff from "./components/staff.jsx"
+import LocationHours from "./components/LocationHours.jsx"
+import Contact from "./components/Contact.jsx"
+import Footer from "./components/Footer.jsx"
+import AnnouncementBanner from "./components/AnnouncementBanner.jsx"
+import Login from "./components/Login.jsx"
+import AnnouncementManager from "./components/AdminConsole.jsx"
+import GalleryManager from "./components/GalleryManager.jsx"
+import Gallery from "./components/Gallery"
+import { LanguageProvider } from "./contexts/LanguageContext.jsx"
+
+import "./components/styles/animations.css"
+import { Helmet } from "react-helmet"
 
 function ScrollToTop() {
-  const { pathname, hash } = useLocation();
+  const { pathname, hash } = useLocation()
 
   useEffect(() => {
     if (!hash) {
-      window.scrollTo(0, 0);
+      window.scrollTo(0, 0)
     } else {
       setTimeout(() => {
-        const id = hash.replace('#', '');
-        const element = document.getElementById(id);
+        const id = hash.replace("#", "")
+        const element = document.getElementById(id)
         if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+          element.scrollIntoView({ behavior: "smooth" })
         }
-      }, 0);
+      }, 0)
     }
-  }, [pathname, hash]);
+  }, [pathname, hash])
 
-  return null;
+  return null
 }
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"))
 
   const handleLogin = () => {
-    setIsLoggedIn(true);
-  };
+    setIsLoggedIn(true)
+  }
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    setIsLoggedIn(false);
-  };
+    localStorage.removeItem("token")
+    setIsLoggedIn(false)
+  }
 
   return (
-    <>
+    <LanguageProvider>
       <Helmet>
         <title>AR BEAUTY | Professional Beauty Services in Toronto</title>
-        <meta name="description" content="AR BEAUTY offers professional beauty services including makeup, hair styling, and more. Book your appointment today for a luxurious beauty experience." />
+        <meta
+          name="description"
+          content="AR BEAUTY offers professional beauty services including makeup, hair styling, and more. Book your appointment today for a luxurious beauty experience."
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="keywords" content="beauty salon, makeup, hair styling, Canada beauty services" />
         <meta property="og:title" content="AR BEAUTY | Professional Beauty Services" />
-        <meta property="og:description" content="Professional beauty services including makeup, hair styling, and more." />
+        <meta
+          property="og:description"
+          content="Professional beauty services including makeup, hair styling, and more."
+        />
         <meta property="og:url" content="https://arbeauty.ca" />
         <link rel="canonical" href="https://arbeauty.ca" />
-        
+
         {/* Add structured data */}
         <script type="application/ld+json">
           {`
@@ -95,35 +104,33 @@ function App() {
             <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} />
             <AnnouncementBanner />
           </div>
-          <div className="pt-28"> {/* Adjust this value based on the combined height of Navbar and AnnouncementBanner */}
+          <div className="pt-28">
+            {" "}
+            {/* Adjust this value based on the combined height of Navbar and AnnouncementBanner */}
             <Routes>
-              <Route path="/" element={
-                <main>
-                  <Hero />
-                  <Services />
-                  <Staff />
-                  <LocationHours />
-                  <Contact />
-                </main>
-              } />
+              <Route
+                path="/"
+                element={
+                  <main>
+                    <Hero />
+                    <Services />
+                    <Staff />
+                    <LocationHours />
+                    <Contact />
+                  </main>
+                }
+              />
               <Route path="/gallery" element={<Gallery />} />
-              <Route path="/login" element={
-                isLoggedIn ? <Navigate to="/admin" /> : <Login onLogin={handleLogin} />
-              } />
-              <Route path="/admin" element={
-                isLoggedIn ? <AnnouncementManager /> : <Navigate to="/login" />
-              } />
-              <Route path="/admin/gallery" element={
-                isLoggedIn ? <GalleryManager /> : <Navigate to="/login" />
-              } />
+              <Route path="/login" element={isLoggedIn ? <Navigate to="/admin" /> : <Login onLogin={handleLogin} />} />
+              <Route path="/admin" element={isLoggedIn ? <AnnouncementManager /> : <Navigate to="/login" />} />
+              <Route path="/admin/gallery" element={isLoggedIn ? <GalleryManager /> : <Navigate to="/login" />} />
             </Routes>
           </div>
           <Footer />
         </div>
       </Router>
-    </>
-  );
+    </LanguageProvider>
+  )
 }
 
-export default App;
-
+export default App

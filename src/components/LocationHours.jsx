@@ -1,80 +1,89 @@
-import React, { useState, useEffect } from 'react';
-import { API_URL } from '../config';
+"use client"
+
+import { useState, useEffect } from "react"
+import { API_URL } from "../config"
+import { useLanguage } from "../contexts/LanguageContext"
 
 const LocationHours = () => {
-  const [hours, setHours] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [hours, setHours] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const { t, language } = useLanguage()
 
   const defaultHours = [
-    { day: 'Monday', time: 'CLOSED' },
-    { day: 'Tuesday', time: '10:30 AM - 7:30 PM' },
-    { day: 'Wednesday', time: '10:30 AM - 7:30 PM' },
-    { day: 'Thursday', time: '02:30 PM - 7:30 PM' },
-    { day: 'Friday', time: '10:30 PM - 7:30 PM' },
-    { day: 'Saturday', time: '10:30 AM - 6:30 PM' },
-    { day: 'Sunday', time: '10:30 AM - 6:30 PM' },
-  ];
+    { day: "Monday", time: "CLOSED" },
+    { day: "Tuesday", time: "10:30 AM - 7:30 PM" },
+    { day: "Wednesday", time: "10:30 AM - 7:30 PM" },
+    { day: "Thursday", time: "02:30 PM - 7:30 PM" },
+    { day: "Friday", time: "10:30 PM - 7:30 PM" },
+    { day: "Saturday", time: "10:30 AM - 6:30 PM" },
+    { day: "Sunday", time: "10:30 AM - 6:30 PM" },
+  ]
 
   useEffect(() => {
-    fetchHours();
-  }, []);
+    fetchHours()
+  }, [])
 
   const fetchHours = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/hours`);
+      const response = await fetch(`${API_URL}/api/hours`)
       if (response.ok) {
-        const data = await response.json();
-        setHours(data);
+        const data = await response.json()
+        setHours(data)
       } else {
         // If backend request fails, use default hours
-        setHours(defaultHours);
+        setHours(defaultHours)
       }
     } catch (error) {
       // If there's any error, use default hours
-      setHours(defaultHours);
+      setHours(defaultHours)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  const mapUrl = "https://maps.app.goo.gl/TtBD6ZsdoMM7RCEa8";
+  const mapUrl = "https://maps.app.goo.gl/TtBD6ZsdoMM7RCEa8"
+
+  const getDayTranslation = (day) => {
+    const dayLower = day.toLowerCase()
+    return t(`days.${dayLower}`)
+  }
 
   if (loading) {
     return (
       <div className="py-16 md:py-20 bg-white text-center">
         <div className="container mx-auto px-4">
-          <p>Loading hours...</p>
+          <p>{t("location.loading")}</p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
     <section id="location" className="py-16 md:py-20 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">Location & Hours</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">{t("location.title")}</h2>
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-8 md:mb-0 md:w-1/2">
-            <h3 className="text-xl font-semibold mb-4">Our Location</h3>
+            <h3 className="text-xl font-semibold mb-4">{t("location.ourLocation")}</h3>
             <p>Unit 103, 7191 Yonge St.</p>
             <p>Thornhill, ON L3T 0C4</p>
             <p>Phone: (437) 365-4320</p>
-            <a 
+            <a
               href={mapUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block mt-4 bg-black text-white py-2 px-4 rounded hover:bg-gray-800 transition duration-300"
             >
-              View on Google Maps
+              {t("location.viewOnGoogleMaps")}
             </a>
           </div>
           <div className="md:w-1/2">
-            <h3 className="text-xl font-semibold mb-4">Store Hours</h3>
+            <h3 className="text-xl font-semibold mb-4">{t("location.storeHours")}</h3>
             <ul className="space-y-2">
               {hours.map((item, index) => (
                 <li key={item.id || index} className="flex justify-between">
-                  <span className="font-medium">{item.day}:</span>
+                  <span className="font-medium">{language === "ko-KR" ? getDayTranslation(item.day) : item.day}:</span>
                   <span>{item.time}</span>
                 </li>
               ))}
@@ -94,7 +103,7 @@ const LocationHours = () => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default LocationHours;
+export default LocationHours

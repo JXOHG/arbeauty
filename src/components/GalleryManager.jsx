@@ -1,169 +1,167 @@
-import React, { useState, useEffect } from 'react';
-import { API_URL } from '../config';
-import { Loader2 } from 'lucide-react';
-import heic2any from 'heic2any';
-import LazyImage from './LazyImage';
+"use client"
+
+import { useState, useEffect } from "react"
+import { API_URL } from "../config"
+import { Loader2 } from 'lucide-react'
+import heic2any from "heic2any"
+import LazyImage from "./LazyImage"
+import { useLanguage } from "../contexts/LanguageContext"
 
 const GalleryManager = () => {
-  const [images, setImages] = useState([]);
-  const [newImage, setNewImage] = useState(null);
-  const [newImageAlt, setNewImageAlt] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const ALLOWED_FORMATS = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/heic'];
+  const [images, setImages] = useState([])
+  const [newImage, setNewImage] = useState(null)
+  const [newImageAlt, setNewImageAlt] = useState("")
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
+  const [isUploading, setIsUploading] = useState(false)
+  const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+  const ALLOWED_FORMATS = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic"]
+  const { t } = useLanguage()
 
   useEffect(() => {
-    fetchImages();
-  }, []);
+    fetchImages()
+  }, [])
 
   const fetchImages = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/gallery`);
+      const response = await fetch(`${API_URL}/api/gallery`)
       if (response.ok) {
-        const data = await response.json();
-        setImages(data);
+        const data = await response.json()
+        setImages(data)
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Failed to fetch images');
+        const errorData = await response.json()
+        setError(errorData.error || t("admin.error"))
       }
     } catch (error) {
-      setError('Error fetching images');
-      console.error('Error fetching images:', error);
+      setError(t("admin.error"))
+      console.error("Error fetching images:", error)
     }
-  };
+  }
 
   const validateImage = (file) => {
     if (!file) {
-      throw new Error('Please select an image to upload');
+      throw new Error(t("admin.selectImage"))
     }
 
     if (!ALLOWED_FORMATS.includes(file.type)) {
-      throw new Error('Invalid file format. Please upload a JPG, JPEG, PNG, WebP, or HEIC image');
+      throw new Error(t("admin.fileFormatError"))
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      throw new Error('File size too large. Maximum size is 5MB');
+      throw new Error(t("admin.fileSizeError"))
     }
-  };
+  }
 
   const handleImageUpload = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-    
+    e.preventDefault()
+    setError("")
+    setSuccess("")
+
     try {
-      validateImage(newImage);
-      setIsUploading(true);
-  
-      let imageToUpload = newImage;
-      if (newImage.type === 'image/heic') {
+      validateImage(newImage)
+      setIsUploading(true)
+
+      let imageToUpload = newImage
+      if (newImage.type === "image/heic") {
         const convertedBlob = await heic2any({
           blob: newImage,
-          toType: 'image/jpeg',
-          quality: 0.8
-        });
-        imageToUpload = new File([convertedBlob], newImage.name.replace(/\.heic$/, '.jpg'), { type: 'image/jpeg' });
+          toType: "image/jpeg",
+          quality: 0.8,
+        })
+        imageToUpload = new File([convertedBlob], newImage.name.replace(/\.heic$/, ".jpg"), { type: "image/jpeg" })
       }
 
-      const formData = new FormData();
-      formData.append('image', imageToUpload);
-      formData.append('alt', newImageAlt);
-  
-      const token = localStorage.getItem('token');
+      const formData = new FormData()
+      formData.append("image", imageToUpload)
+      formData.append("alt", newImageAlt)
+
+      const token = localStorage.getItem("token")
       const response = await fetch(`${API_URL}/api/gallery`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
-      });
-  
-      console.log('Response status:', response.status);
-      const contentType = response.headers.get('content-type');
-      console.log('Content type:', contentType);
-  
-      if (!contentType?.includes('application/json')) {
-        const text = await response.text();
-        console.error('Non-JSON response:', text);
-        throw new Error('Server returned non-JSON response');
+      })
+
+      console.log("Response status:", response.status)
+      const contentType = response.headers.get("content-type")
+      console.log("Content type:", contentType)
+
+      if (!contentType?.includes("application/json")) {
+        const text = await response.text()
+        console.error("Non-JSON response:", text)
+        throw new Error(t("admin.error"))
       }
-  
-      const data = await response.json();
-  
+
+      const data = await response.json()
+
       if (response.ok) {
-        setSuccess('Image uploaded successfully');
-        setNewImage(null);
-        setNewImageAlt('');
-        fetchImages();
+        setSuccess(t("admin.imageUploadSuccess"))
+        setNewImage(null)
+        setNewImageAlt("")
+        fetchImages()
       } else {
-        setError(data.error || 'Failed to upload image');
+        setError(data.error || t("admin.error"))
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      setError(error.message || 'Error uploading image');
+      console.error("Upload error:", error)
+      setError(error.message || t("admin.error"))
     } finally {
-      setIsUploading(false);
+      setIsUploading(false)
     }
-  };
+  }
 
   const handleImageSelect = (e) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0]
     if (file) {
       try {
-        validateImage(file);
-        setNewImage(file);
-        setError('');
+        validateImage(file)
+        setNewImage(file)
+        setError("")
       } catch (error) {
-        setError(error.message);
-        setNewImage(null);
-        e.target.value = ''; // Reset file input
+        setError(error.message)
+        setNewImage(null)
+        e.target.value = "" // Reset file input
       }
     }
-  };
+  }
 
   const handleImageDelete = async (id) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token")
       const response = await fetch(`${API_URL}/api/gallery/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-      });
+      })
 
       if (response.ok) {
-        setSuccess('Image deleted successfully');
-        fetchImages();
+        setSuccess(t("admin.imageDeleteSuccess"))
+        fetchImages()
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Failed to delete image');
+        const errorData = await response.json()
+        setError(errorData.error || t("admin.error"))
       }
     } catch (error) {
-      setError('Error deleting image');
-      console.error('Error deleting image:', error);
+      setError(t("admin.error"))
+      console.error("Error deleting image:", error)
     }
-  };
+  }
 
   return (
     <div className="mt-8 px-4 md:px-8">
-      <h2 className="text-xl font-bold mb-4">Manage Gallery</h2>
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </div>
-      )}
+      <h2 className="text-xl font-bold mb-4">{t("admin.manageGallery")}</h2>
+      {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
       {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-          {success}
-        </div>
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>
       )}
-      
+
       <form onSubmit={handleImageUpload} className="mb-8">
         <div className="mb-4">
           <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
-            Upload New Image (JPG, JPEG, PNG, WebP, or HEIC, max 5MB)
+            {t("admin.uploadImage")} (JPG, JPEG, PNG, WebP, or HEIC, max 5MB)
           </label>
           <input
             type="file"
@@ -175,7 +173,7 @@ const GalleryManager = () => {
         </div>
         <div className="mb-4">
           <label htmlFor="alt" className="block text-sm font-medium text-gray-700 mb-2">
-            Image Description (Alt Text)
+            {t("admin.imageDescription")}
           </label>
           <input
             type="text"
@@ -183,23 +181,23 @@ const GalleryManager = () => {
             value={newImageAlt}
             onChange={(e) => setNewImageAlt(e.target.value)}
             className="shadow-sm focus:ring-black focus:border-black block w-full sm:text-sm border-gray-300 rounded-md"
-            placeholder="Enter a description for the image"
+            placeholder={t("admin.enterImageDescription")}
           />
         </div>
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           disabled={isUploading || !newImage}
           className={`inline-flex items-center justify-center bg-black text-white px-4 py-2 rounded-md transition-colors duration-200 ${
-            isUploading || !newImage ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-800'
+            isUploading || !newImage ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-800"
           }`}
         >
           {isUploading ? (
             <>
               <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" />
-              Uploading...
+              {t("admin.uploadingImage")}
             </>
           ) : (
-            'Upload Image'
+            t("admin.uploadImage")
           )}
         </button>
       </form>
@@ -208,11 +206,7 @@ const GalleryManager = () => {
         {images.map((image) => (
           <div key={image.id} className="border rounded-lg shadow-sm overflow-hidden bg-white">
             <div className="aspect-w-4 aspect-h-3">
-              <LazyImage
-                src={image.url}
-                alt={image.alt}
-                className="w-full h-48 object-cover"
-              />
+              <LazyImage src={image.url} alt={image.alt} className="w-full h-48 object-cover" />
             </div>
             <div className="p-4">
               <p className="text-sm text-gray-500 mb-3 line-clamp-2" title={image.alt}>
@@ -222,14 +216,14 @@ const GalleryManager = () => {
                 onClick={() => handleImageDelete(image.id)}
                 className="w-full bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 transition-colors duration-200 flex items-center justify-center"
               >
-                Delete
+                {t("admin.delete")}
               </button>
             </div>
           </div>
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default GalleryManager;
+export default GalleryManager

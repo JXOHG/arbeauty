@@ -1,102 +1,100 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { API_URL } from '../config';
+"use client"
+
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { API_URL } from "../config"
+import { useLanguage } from "../contexts/LanguageContext"
 
 const HoursManager = () => {
-  const navigate = useNavigate();
-  const [hours, setHours] = useState([]);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const navigate = useNavigate()
+  const [hours, setHours] = useState([])
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const { t } = useLanguage()
 
   useEffect(() => {
-    fetchHours();
-  }, []);
+    fetchHours()
+  }, [])
 
   const fetchHours = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/hours`);
+      const response = await fetch(`${API_URL}/api/hours`)
       if (response.ok) {
-        const data = await response.json();
-        setHours(data);
+        const data = await response.json()
+        setHours(data)
       } else {
-        setError('Failed to load store hours');
+        setError(t("admin.error"))
       }
     } catch (error) {
-      setError('Failed to load store hours');
+      setError(t("admin.error"))
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleHourChange = (index, field, value) => {
-    const updatedHours = [...hours];
+    const updatedHours = [...hours]
     updatedHours[index] = {
       ...updatedHours[index],
-      [field]: value
-    };
-    setHours(updatedHours);
-    setError('');
-    setSuccess('');
-  };
+      [field]: value,
+    }
+    setHours(updatedHours)
+    setError("")
+    setSuccess("")
+  }
 
   const saveHours = async () => {
-    setSaving(true);
-    setError('');
-    setSuccess('');
+    setSaving(true)
+    setError("")
+    setSuccess("")
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token")
       if (!token) {
-        navigate('/login');
-        return;
+        navigate("/login")
+        return
       }
 
       const response = await fetch(`${API_URL}/api/hours`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ hours }),
-      });
+      })
 
       if (response.ok) {
-        setSuccess('Store hours updated successfully!');
-        fetchHours(); // Refresh the hours after saving
+        setSuccess(t("admin.hoursSuccess"))
+        fetchHours() // Refresh the hours after saving
       } else {
-        const data = await response.json();
-        setError(data.error || 'Failed to update store hours');
+        const data = await response.json()
+        setError(data.error || t("admin.error"))
       }
     } catch (error) {
-      setError('Network error. Please try again.');
+      setError(t("admin.networkError"))
     } finally {
-      setSaving(false);
+      setSaving(false)
     }
-  };
+  }
 
   if (loading) {
     return (
       <div className="mt-12">
-        <h2 className="text-2xl font-bold mb-4">Manage Store Hours</h2>
-        <div className="text-gray-600">Loading store hours...</div>
+        <h2 className="text-2xl font-bold mb-4">{t("admin.manageHours")}</h2>
+        <div className="text-gray-600">{t("admin.loading")}</div>
       </div>
-    );
+    )
   }
 
   return (
     <div className="mt-12">
-      <h2 className="text-2xl font-bold mb-4">Manage Store Hours</h2>
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </div>
-      )}
+      <h2 className="text-2xl font-bold mb-4">{t("admin.manageHours")}</h2>
+      {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
       {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-          {success}
-        </div>
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>
       )}
       <div className="space-y-4">
         {hours.map((hour, index) => (
@@ -104,13 +102,13 @@ const HoursManager = () => {
             <input
               type="text"
               value={hour.day}
-              onChange={(e) => handleHourChange(index, 'day', e.target.value)}
+              onChange={(e) => handleHourChange(index, "day", e.target.value)}
               className="w-1/3 p-2 border rounded"
             />
             <input
               type="text"
               value={hour.time}
-              onChange={(e) => handleHourChange(index, 'time', e.target.value)}
+              onChange={(e) => handleHourChange(index, "time", e.target.value)}
               className="w-2/3 p-2 border rounded"
             />
           </div>
@@ -120,13 +118,13 @@ const HoursManager = () => {
         onClick={saveHours}
         disabled={saving}
         className={`mt-4 bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors duration-200 w-full ${
-          saving ? 'opacity-50 cursor-not-allowed' : ''
+          saving ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
-        {saving ? 'Saving...' : 'Save Store Hours'}
+        {saving ? t("admin.saving") : t("admin.saveHours")}
       </button>
     </div>
-  );
-};
+  )
+}
 
-export default HoursManager;
+export default HoursManager
