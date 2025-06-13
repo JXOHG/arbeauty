@@ -10,6 +10,7 @@ import LocationHours from "./components/LocationHours.jsx"
 import Contact from "./components/Contact.jsx"
 import Footer from "./components/Footer.jsx"
 import AnnouncementBanner from "./components/AnnouncementBanner.jsx"
+import VacationNotificationBanner from "./components/VacationNotificationBanner.jsx" // Add this import
 import Login from "./components/Login.jsx"
 import AnnouncementManager from "./components/AdminConsole.jsx"
 import GalleryManager from "./components/GalleryManager.jsx"
@@ -102,11 +103,12 @@ function App() {
         <div className="font-sans bg-white text-black">
           <div className="fixed top-0 left-0 right-0 z-50">
             <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+            <VacationNotificationBanner /> {/* Add vacation notification */}
             <AnnouncementBanner />
           </div>
           <div className="pt-28">
             {" "}
-            {/* Adjust this value based on the combined height of Navbar and AnnouncementBanner */}
+            
             <Routes>
               <Route
                 path="/"
