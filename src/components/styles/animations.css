@@ -1,23 +1,61 @@
-@keyframes slide {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
+/* AR Beauty - Redesigned Global Styles */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Jost:wght@200;300;400;500;600&display=swap');
+
+:root {
+  --black: #0a0a0a;
+  --charcoal: #1a1a1a;
+  --dark: #111111;
+  --accent: #fafaf8;
+  --accent-strong: #ffffff;
+  --accent-ink: #0a0a0a;
+  --white: #fafaf8;
+  --off-white: #f0ede6;
+  --gray-light: #e5e2db;
+  --gray-mid: #9a9590;
+  --gray-dark: #555050;
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Jost', sans-serif;
+  --transition-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--white);
+  color: var(--black);
+  overflow-x: hidden;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+/* ─── Announcement Banner ─── */
+@keyframes marquee-slide {
+  from { transform: translateX(100vw); }
+  to { transform: translateX(-100%); }
 }
 
 .animate-slide {
-  display: inline-block;
+  animation: marquee-slide 28s linear infinite;
   white-space: nowrap;
-  animation: slide 20s linear infinite;
-  padding-left: 100%;
 }
 
-/* Remove the gap between iterations */
-.animate-slide > span {
-  padding-right: 100%;
-  margin-right: -100%;
+/* ─── Fade-in animations ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeIn {
@@ -25,6 +63,157 @@
   to { opacity: 1; }
 }
 
-.fade-in {
-  animation: fadeIn 0.5s ease-in-out;
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideLeft {
+  from { opacity: 0; transform: translateX(60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(-60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+
+.animate-fade-up { animation: fadeUp 0.9s var(--transition-smooth) forwards; }
+.animate-fade-in { animation: fadeIn 1.2s var(--transition-smooth) forwards; }
+.animate-scale-in { animation: scaleIn 0.8s var(--transition-smooth) forwards; }
+.animate-slide-left { animation: slideLeft 0.9s var(--transition-smooth) forwards; }
+.animate-slide-right { animation: slideRight 0.9s var(--transition-smooth) forwards; }
+
+.opacity-0 { opacity: 0; }
+
+/* ─── Section reveal (intersection observer hooks) ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.9s var(--transition-smooth), transform 0.9s var(--transition-smooth);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: opacity 0.9s var(--transition-smooth), transform 0.9s var(--transition-smooth);
+}
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+.reveal-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: opacity 0.9s var(--transition-smooth), transform 0.9s var(--transition-smooth);
+}
+.reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+/* ─── Divider line accent ─── */
+.gold-line {
+  display: block;
+  width: 60px;
+  height: 2px;
+  background: var(--accent-ink);
+  margin: 0 auto;
+}
+
+/* ─── Section headings ─── */
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--black);
+  line-height: 1.1;
+}
+
+.section-title-light {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  line-height: 1.1;
+}
+
+/* ─── Button styles ─── */
+.btn-primary {
+  display: inline-block;
+  padding: 14px 40px;
+  background: var(--accent-ink);
+  border: 1px solid var(--accent-ink);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.4s var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--white);
+  transform: translateX(-101%);
+  transition: transform 0.4s var(--transition-smooth);
+  z-index: 0;
+}
+
+.btn-primary:hover { color: var(--accent-ink); }
+.btn-primary:hover::before { transform: translateX(0); }
+.btn-primary span { position: relative; z-index: 1; }
+
+.btn-dark {
+  display: inline-block;
+  padding: 14px 40px;
+  background: var(--black);
+  border: 1px solid var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s var(--transition-smooth);
+}
+.btn-dark:hover {
+  background: transparent;
+  color: var(--black);
+}
+
+/* ─── Input styles ─── */
+.input-elegant {
+  width: 100%;
+  padding: 12px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--gray-light);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: var(--black);
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+.input-elegant:focus { border-bottom-color: var(--accent-ink); }
+.input-elegant::placeholder { color: var(--gray-mid); }
+
+.label-elegant {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gray-dark);
+  margin-bottom: 4px;
 }

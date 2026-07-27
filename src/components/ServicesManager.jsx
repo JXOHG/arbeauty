@@ -1,18 +1,21 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { API_URL } from "../config"
 import { useLanguage } from "../contexts/LanguageContext"
+import { useToastContext } from "./AdminConsole"
+import { Loader2, Upload, X, Image as ImageIcon } from "lucide-react"
 
 const ServicesManager = () => {
   const [services, setServices] = useState({})
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(null)
   const navigate = useNavigate()
   const { language, t } = useLanguage()
   const isKorean = language === "ko-KR"
+  const fileInputRefs = useRef({})
+  const { showSuccess, showError } = useToastContext()
 
   useEffect(() => {
     fetchServices()
@@ -27,7 +30,7 @@ const ServicesManager = () => {
       }
     } catch (error) {
       console.error("Error fetching services:", error)
-      setError(isKorean ? t("admin.error") : "Failed to load services")
+      showError(isKorean ? t("admin.error") : "Failed to load services")
     }
   }
 
@@ -36,28 +39,21 @@ const ServicesManager = () => {
       ...prev,
       [category]: prev[category].map((service, i) => (i === index ? { ...service, [field]: value } : service)),
     }))
-    setError("")
-    setSuccess("")
   }
 
   const addNewService = (category) => {
     setServices((prev) => {
-      // If category doesn't exist yet, create a new array
       if (!prev[category]) {
         return {
           ...prev,
           [category]: [{ name: "", price: "" }],
         }
       }
-
-      // Otherwise add to existing category
       return {
         ...prev,
         [category]: [...prev[category], { name: "", price: "" }],
       }
     })
-    setError("")
-    setSuccess("")
   }
 
   const deleteService = (category, index) => {
@@ -66,7 +62,6 @@ const ServicesManager = () => {
         const updatedCategory = [...prev[category]]
         updatedCategory.splice(index, 1)
 
-        // If this was the last service in the category, return without the category
         if (updatedCategory.length === 0) {
           const newServices = { ...prev }
           delete newServices[category]
@@ -78,8 +73,6 @@ const ServicesManager = () => {
           [category]: updatedCategory,
         }
       })
-      setError("")
-      setSuccess("")
     }
   }
 
@@ -94,8 +87,6 @@ const ServicesManager = () => {
         delete newServices[category]
         return newServices
       })
-      setError("")
-      setSuccess("")
     }
   }
 
@@ -109,10 +100,111 @@ const ServicesManager = () => {
     }
   }
 
+  const handleImageUpload = async (category, index, file) => {
+    if (!file) return
+
+    const uploadKey = `${category}-${index}`
+    setUploadingImage(uploadKey)
+
+    try {
+      const token = localStorage.getItem("token")
+      if (!token) {
+        navigate("/login")
+        return
+      }
+
+      const formData = new FormData()
+      formData.append("image", file)
+
+      const response = await fetch(`${API_URL}/api/services/${encodeURIComponent(category)}/${index}/image`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setServices((prev) => ({
+          ...prev,
+          [category]: prev[category].map((service, i) =>
+            i === index
+              ? { ...service, imageUrl: data.imageUrl, imagePublicId: data.imagePublicId }
+              : service
+          ),
+        }))
+        showSuccess(isKorean ? "이미지가 업로드되었습니다" : "Image uploaded successfully!")
+      } else {
+        if (response.status === 401) {
+          localStorage.removeItem("token")
+          navigate("/login")
+        } else {
+          const data = await response.json()
+          showError(data.error || (isKorean ? t("admin.error") : "Failed to upload image"))
+        }
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error)
+      showError(isKorean ? t("admin.networkError") : "Network error. Please try again.")
+    } finally {
+      setUploadingImage(null)
+    }
+  }
+
+  const handleImageDelete = async (category, index) => {
+    if (!window.confirm(isKorean ? "이미지를 삭제하시겠습니까?" : "Are you sure you want to delete this image?")) {
+      return
+    }
+
+    const uploadKey = `${category}-${index}`
+    setUploadingImage(uploadKey)
+
+    try {
+      const token = localStorage.getItem("token")
+      if (!token) {
+        navigate("/login")
+        return
+      }
+
+      const response = await fetch(`${API_URL}/api/services/${encodeURIComponent(category)}/${index}/image`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (response.ok) {
+        setServices((prev) => ({
+          ...prev,
+          [category]: prev[category].map((service, i) => {
+            if (i === index) {
+              const { imageUrl, imagePublicId, ...rest } = service
+              return rest
+            }
+            return service
+          }),
+        }))
+        showSuccess(isKorean ? "이미지가 삭제되었습니다" : "Image deleted successfully!")
+      } else {
+        if (response.status === 401) {
+          localStorage.removeItem("token")
+          navigate("/login")
+        } else {
+          const data = await response.json()
+          showError(data.error || (isKorean ? t("admin.error") : "Failed to delete image"))
+        }
+      }
+    } catch (error) {
+      console.error("Error deleting image:", error)
+      showError(isKorean ? t("admin.networkError") : "Network error. Please try again.")
+    } finally {
+      setUploadingImage(null)
+    }
+  }
+
   const saveServices = async () => {
     setLoading(true)
-    setError("")
-    setSuccess("")
 
     try {
       const token = localStorage.getItem("token")
@@ -131,18 +223,18 @@ const ServicesManager = () => {
       })
 
       if (response.ok) {
-        setSuccess(isKorean ? t("admin.servicesSuccess") : "Services saved successfully!")
+        showSuccess(isKorean ? t("admin.servicesSuccess") : "Services saved successfully!")
       } else {
         if (response.status === 401) {
           localStorage.removeItem("token")
           navigate("/login")
         } else {
           const data = await response.json()
-          setError(data.error || (isKorean ? t("admin.error") : "Failed to save services"))
+          showError(data.error || (isKorean ? t("admin.error") : "Failed to save services"))
         }
       }
     } catch (error) {
-      setError(isKorean ? t("admin.networkError") : "Network error. Please try again.")
+      showError(isKorean ? t("admin.networkError") : "Network error. Please try again.")
     } finally {
       setLoading(false)
     }
@@ -151,10 +243,6 @@ const ServicesManager = () => {
   return (
     <div className="mt-12">
       <h2 className="text-2xl font-bold mb-4">{isKorean ? t("admin.manageServices") : "Manage Services"}</h2>
-      {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
-      {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>
-      )}
 
       {Object.entries(services).map(([category, categoryServices]) => (
         <div key={category} className="mb-6 p-4 border border-gray-200 rounded-lg">
@@ -165,35 +253,101 @@ const ServicesManager = () => {
               className="text-red-600 hover:text-red-800 transition-colors duration-200"
               title={isKorean ? t("admin.deleteCategory") : "Delete category"}
             >
-              🗑️
+              {"🗑️"}
             </button>
           </div>
 
-          {categoryServices.map((service, index) => (
-            <div key={index} className="flex gap-4 mb-2 items-center">
-              <input
-                type="text"
-                value={service.name}
-                onChange={(e) => handleServiceChange(category, index, "name", e.target.value)}
-                className="flex-1 shadow-sm focus:ring-black focus:border-black block sm:text-sm border-gray-300 rounded-md"
-                placeholder={isKorean ? t("admin.serviceName") : "Service name"}
-              />
-              <input
-                type="text"
-                value={service.price}
-                onChange={(e) => handleServiceChange(category, index, "price", e.target.value)}
-                className="w-40 shadow-sm focus:ring-black focus:border-black block sm:text-sm border-gray-300 rounded-md"
-                placeholder={isKorean ? t("admin.price") : "Price"}
-              />
-              <button
-                onClick={() => deleteService(category, index)}
-                className="text-red-600 hover:text-red-800 transition-colors duration-200"
-                title={isKorean ? t("admin.deleteService") : "Delete service"}
-              >
-                ✕
-              </button>
-            </div>
-          ))}
+          {categoryServices.map((service, index) => {
+            const uploadKey = `${category}-${index}`
+            const isUploading = uploadingImage === uploadKey
+
+            return (
+              <div key={index} className="mb-4 p-3 bg-gray-50 rounded-lg">
+                <div className="flex gap-4 mb-2 items-center">
+                  <input
+                    type="text"
+                    value={service.name}
+                    onChange={(e) => handleServiceChange(category, index, "name", e.target.value)}
+                    className="flex-1 shadow-sm focus:ring-black focus:border-black block sm:text-sm border-gray-300 rounded-md"
+                    placeholder={isKorean ? t("admin.serviceName") : "Service name"}
+                  />
+                  <input
+                    type="text"
+                    value={service.price}
+                    onChange={(e) => handleServiceChange(category, index, "price", e.target.value)}
+                    className="w-40 shadow-sm focus:ring-black focus:border-black block sm:text-sm border-gray-300 rounded-md"
+                    placeholder={isKorean ? t("admin.price") : "Price"}
+                  />
+                  <button
+                    onClick={() => deleteService(category, index)}
+                    className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                    title={isKorean ? t("admin.deleteService") : "Delete service"}
+                  >
+                    {"✕"}
+                  </button>
+                </div>
+
+                {/* Image upload section */}
+                <div className="mt-2 flex items-center gap-3">
+                  {service.imageUrl ? (
+                    <div className="relative group">
+                      <img
+                        src={service.imageUrl}
+                        alt={service.name}
+                        className="w-20 h-20 object-cover rounded-md border border-gray-200"
+                      />
+                      <button
+                        onClick={() => handleImageDelete(category, index)}
+                        disabled={isUploading}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600"
+                        title={isKorean ? "이미지 삭제" : "Delete image"}
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                      {isUploading && (
+                        <div className="absolute inset-0 bg-black/50 rounded-md flex items-center justify-center">
+                          <Loader2 className="w-5 h-5 text-white animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp,image/heic"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            handleImageUpload(category, index, file)
+                          }
+                          e.target.value = ""
+                        }}
+                        disabled={isUploading}
+                      />
+                      <div
+                        className={`w-20 h-20 border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center text-gray-400 hover:border-gray-400 hover:text-gray-500 transition-colors duration-200 ${
+                          isUploading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                      >
+                        {isUploading ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <>
+                            <ImageIcon className="w-5 h-5 mb-1" />
+                            <span className="text-xs">{isKorean ? "사진" : "Photo"}</span>
+                          </>
+                        )}
+                      </div>
+                    </label>
+                  )}
+                  <span className="text-xs text-gray-500">
+                    {isKorean ? "(선택사항) 서비스 사진 추가" : "(Optional) Add a photo for this service"}
+                  </span>
+                </div>
+              </div>
+            )
+          })}
 
           <button
             onClick={() => addNewService(category)}

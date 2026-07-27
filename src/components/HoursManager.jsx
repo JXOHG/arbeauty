@@ -4,16 +4,16 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { API_URL } from "../config"
 import { useLanguage } from "../contexts/LanguageContext"
+import { useToastContext } from "./AdminConsole"
 
 const HoursManager = () => {
   const navigate = useNavigate()
   const [hours, setHours] = useState([])
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const { language, t } = useLanguage()
   const isKorean = language === "ko-KR"
+  const { showSuccess, showError } = useToastContext()
 
   useEffect(() => {
     fetchHours()
@@ -26,10 +26,10 @@ const HoursManager = () => {
         const data = await response.json()
         setHours(data)
       } else {
-        setError(isKorean ? t("admin.error") : "Failed to load store hours")
+        showError(isKorean ? t("admin.error") : "Failed to load store hours")
       }
     } catch (error) {
-      setError(isKorean ? t("admin.error") : "Failed to load store hours")
+      showError(isKorean ? t("admin.error") : "Failed to load store hours")
     } finally {
       setLoading(false)
     }
@@ -42,14 +42,10 @@ const HoursManager = () => {
       [field]: value,
     }
     setHours(updatedHours)
-    setError("")
-    setSuccess("")
   }
 
   const saveHours = async () => {
     setSaving(true)
-    setError("")
-    setSuccess("")
 
     try {
       const token = localStorage.getItem("token")
@@ -68,14 +64,14 @@ const HoursManager = () => {
       })
 
       if (response.ok) {
-        setSuccess(isKorean ? t("admin.hoursSuccess") : "Store hours updated successfully!")
+        showSuccess(isKorean ? t("admin.hoursSuccess") : "Store hours updated successfully!")
         fetchHours() // Refresh the hours after saving
       } else {
         const data = await response.json()
-        setError(data.error || (isKorean ? t("admin.error") : "Failed to update store hours"))
+        showError(data.error || (isKorean ? t("admin.error") : "Failed to update store hours"))
       }
     } catch (error) {
-      setError(isKorean ? t("admin.networkError") : "Network error. Please try again.")
+      showError(isKorean ? t("admin.networkError") : "Network error. Please try again.")
     } finally {
       setSaving(false)
     }
@@ -93,10 +89,6 @@ const HoursManager = () => {
   return (
     <div className="mt-12">
       <h2 className="text-2xl font-bold mb-4">{isKorean ? t("admin.manageHours") : "Manage Store Hours"}</h2>
-      {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
-      {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>
-      )}
       <div className="space-y-4">
         {hours.map((hour, index) => (
           <div key={hour.id || index} className="flex gap-4">

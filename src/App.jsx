@@ -8,9 +8,8 @@ import Services from "./components/Services.jsx"
 import Staff from "./components/staff.jsx"
 import LocationHours from "./components/LocationHours.jsx"
 import Contact from "./components/Contact.jsx"
-import Footer from "./components/Footer.jsx"
+import Footer from "./components/footer.jsx"
 import AnnouncementBanner from "./components/AnnouncementBanner.jsx"
-import VacationNotificationBanner from "./components/VacationNotificationBanner.jsx" // Add this import
 import Login from "./components/Login.jsx"
 import AnnouncementManager from "./components/AdminConsole.jsx"
 import GalleryManager from "./components/GalleryManager.jsx"
@@ -40,13 +39,46 @@ function ScrollToTop() {
   return null
 }
 
+function AppContent({ isLoggedIn, onLogout, onLogin }) {
+  const location = useLocation()
+  const isAdminPage = location.pathname === "/admin" || location.pathname === "/admin/gallery"
+  
+  return (
+    <div style={{ fontFamily: "'Jost', sans-serif", background: "#fafaf8" }}>
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100 }}>
+        <AnnouncementBanner />
+        <Navbar isLoggedIn={isLoggedIn} onLogout={onLogout} isAdminPage={isAdminPage} />
+      </div>
+
+      {/* Hero starts right at the top (full-screen, no padding needed) */}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <main>
+              <Hero />
+              <Services />
+              <Staff />
+              <LocationHours />
+              <Contact />
+            </main>
+          }
+        />
+        <Route path="/gallery" element={<div style={{ paddingTop: "80px", background: "#0a0a0a" }}><Gallery /></div>} />
+        <Route path="/login" element={isLoggedIn ? <Navigate to="/admin" /> : <Login onLogin={onLogin} />} />
+        <Route path="/admin" element={isLoggedIn ? <AnnouncementManager /> : <Navigate to="/login" />} />
+        <Route path="/admin/gallery" element={isLoggedIn ? <GalleryManager /> : <Navigate to="/login" />} />
+      </Routes>
+
+      <Footer />
+    </div>
+  )
+}
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"))
 
-  const handleLogin = () => {
-    setIsLoggedIn(true)
-  }
-
+  const handleLogin = () => setIsLoggedIn(true)
   const handleLogout = () => {
     localStorage.removeItem("token")
     setIsLoggedIn(false)
@@ -63,14 +95,14 @@ function App() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="keywords" content="beauty salon, makeup, hair styling, Canada beauty services" />
         <meta property="og:title" content="AR BEAUTY | Professional Beauty Services" />
-        <meta
-          property="og:description"
-          content="Professional beauty services including makeup, hair styling, and more."
-        />
+        <meta property="og:description" content="Professional beauty services including makeup, hair styling, and more." />
         <meta property="og:url" content="https://arbeauty.ca" />
         <link rel="canonical" href="https://arbeauty.ca" />
+        {/* Google Fonts */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet" />
 
-        {/* Add structured data */}
         <script type="application/ld+json">
           {`
             {
@@ -87,49 +119,19 @@ function App() {
                 "postalCode": "L3T 0C4",
                 "addressCountry": "CA"
               },
-              "openingHours": ["Mo CLOSED", "Tu -We 10:00 AM - 7:00 PM","Th 02:00 PM - 7:00 PM", "Fr 10:00 PM - 7:00 PM", "Sa 10:00 AM - 6:00 PM","Su 10:00 AM - 6:00 PM"],
+              "openingHours": ["Mo CLOSED", "Tu-We 10:30 AM - 7:30 PM","Th 02:30 PM - 7:30 PM", "Fr 10:30 AM - 7:30 PM", "Sa 10:30 AM - 6:30 PM","Su 10:30 AM - 6:30 PM"],
               "telephone": "4373654320",
               "priceRange": "$$",
               "image": "https://arbeauty.ca/logo.png",
-              "sameAs": [
-                "https://www.instagram.com/arbeauty2309"
-              ]
+              "sameAs": ["https://www.instagram.com/arbeauty2309"]
             }
           `}
         </script>
       </Helmet>
+
       <Router>
         <ScrollToTop />
-        <div className="font-sans bg-white text-black">
-          <div className="fixed top-0 left-0 right-0 z-50">
-            <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} />
-            <VacationNotificationBanner /> {/* Add vacation notification */}
-            <AnnouncementBanner />
-          </div>
-          <div className="pt-28">
-            {" "}
-            
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <main>
-                    <Hero />
-                    <Services />
-                    <Staff />
-                    <LocationHours />
-                    <Contact />
-                  </main>
-                }
-              />
-              <Route path="/gallery" element={<Gallery />} />
-              <Route path="/login" element={isLoggedIn ? <Navigate to="/admin" /> : <Login onLogin={handleLogin} />} />
-              <Route path="/admin" element={isLoggedIn ? <AnnouncementManager /> : <Navigate to="/login" />} />
-              <Route path="/admin/gallery" element={isLoggedIn ? <GalleryManager /> : <Navigate to="/login" />} />
-            </Routes>
-          </div>
-          <Footer />
-        </div>
+        <AppContent isLoggedIn={isLoggedIn} onLogout={handleLogout} onLogin={handleLogin} />
       </Router>
     </LanguageProvider>
   )

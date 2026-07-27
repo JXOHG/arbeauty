@@ -6,18 +6,18 @@ import { Loader2 } from 'lucide-react'
 import heic2any from "heic2any"
 import LazyImage from "./LazyImage"
 import { useLanguage } from "../contexts/LanguageContext"
+import { useToastContext } from "./AdminConsole"
 
 const GalleryManager = () => {
   const [images, setImages] = useState([])
   const [newImage, setNewImage] = useState(null)
   const [newImageAlt, setNewImageAlt] = useState("")
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
   const [isUploading, setIsUploading] = useState(false)
   const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
   const ALLOWED_FORMATS = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic"]
   const { language, t } = useLanguage()
   const isKorean = language === "ko-KR"
+  const { showSuccess, showError } = useToastContext()
 
   useEffect(() => {
     fetchImages()
@@ -31,10 +31,10 @@ const GalleryManager = () => {
         setImages(data)
       } else {
         const errorData = await response.json()
-        setError(errorData.error || (isKorean ? t("admin.error") : "Failed to fetch images"))
+        showError(errorData.error || (isKorean ? t("admin.error") : "Failed to fetch images"))
       }
     } catch (error) {
-      setError(isKorean ? t("admin.error") : "Error fetching images")
+      showError(isKorean ? t("admin.error") : "Error fetching images")
       console.error("Error fetching images:", error)
     }
   }
@@ -59,8 +59,6 @@ const GalleryManager = () => {
 
   const handleImageUpload = async (e) => {
     e.preventDefault()
-    setError("")
-    setSuccess("")
 
     try {
       validateImage(newImage)
@@ -102,16 +100,16 @@ const GalleryManager = () => {
       const data = await response.json()
 
       if (response.ok) {
-        setSuccess(isKorean ? t("admin.imageUploadSuccess") : "Image uploaded successfully")
+        showSuccess(isKorean ? t("admin.imageUploadSuccess") : "Image uploaded successfully")
         setNewImage(null)
         setNewImageAlt("")
         fetchImages()
       } else {
-        setError(data.error || (isKorean ? t("admin.error") : "Failed to upload image"))
+        showError(data.error || (isKorean ? t("admin.error") : "Failed to upload image"))
       }
     } catch (error) {
       console.error("Upload error:", error)
-      setError(error.message || (isKorean ? t("admin.error") : "Error uploading image"))
+      showError(error.message || (isKorean ? t("admin.error") : "Error uploading image"))
     } finally {
       setIsUploading(false)
     }
@@ -123,9 +121,8 @@ const GalleryManager = () => {
       try {
         validateImage(file)
         setNewImage(file)
-        setError("")
       } catch (error) {
-        setError(error.message)
+        showError(error.message)
         setNewImage(null)
         e.target.value = "" // Reset file input
       }
@@ -143,14 +140,14 @@ const GalleryManager = () => {
       })
 
       if (response.ok) {
-        setSuccess(isKorean ? t("admin.imageDeleteSuccess") : "Image deleted successfully")
+        showSuccess(isKorean ? t("admin.imageDeleteSuccess") : "Image deleted successfully")
         fetchImages()
       } else {
         const errorData = await response.json()
-        setError(errorData.error || (isKorean ? t("admin.error") : "Failed to delete image"))
+        showError(errorData.error || (isKorean ? t("admin.error") : "Failed to delete image"))
       }
     } catch (error) {
-      setError(isKorean ? t("admin.error") : "Error deleting image")
+      showError(isKorean ? t("admin.error") : "Error deleting image")
       console.error("Error deleting image:", error)
     }
   }
@@ -158,10 +155,6 @@ const GalleryManager = () => {
   return (
     <div className="mt-8 px-4 md:px-8">
       <h2 className="text-xl font-bold mb-4">{isKorean ? t("admin.manageGallery") : "Manage Gallery"}</h2>
-      {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
-      {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>
-      )}
 
       <form onSubmit={handleImageUpload} className="mb-8">
         <div className="mb-4">

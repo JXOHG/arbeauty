@@ -4,16 +4,16 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { API_URL } from "../config"
 import { useLanguage } from "../contexts/LanguageContext"
+import { useToastContext } from "./AdminConsole"
 
 const StaffManager = () => {
   const navigate = useNavigate()
   const [staff, setStaff] = useState([])
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const { language, t } = useLanguage()
   const isKorean = language === "ko-KR"
+  const { showSuccess, showError } = useToastContext()
 
   useEffect(() => {
     fetchStaff()
@@ -26,10 +26,10 @@ const StaffManager = () => {
         const data = await response.json()
         setStaff(data)
       } else {
-        setError(isKorean ? t("admin.error") : "Failed to load staff data")
+        showError(isKorean ? t("admin.error") : "Failed to load staff data")
       }
     } catch (error) {
-      setError(isKorean ? t("admin.error") : "Failed to load staff data")
+      showError(isKorean ? t("admin.error") : "Failed to load staff data")
     } finally {
       setLoading(false)
     }
@@ -42,8 +42,6 @@ const StaffManager = () => {
       [field]: value,
     }
     setStaff(updatedStaff)
-    setError("")
-    setSuccess("")
   }
 
   const addStaffMember = () => {
@@ -54,14 +52,10 @@ const StaffManager = () => {
     const updatedStaff = [...staff]
     updatedStaff.splice(index, 1)
     setStaff(updatedStaff)
-    setError("")
-    setSuccess("")
   }
 
   const saveStaff = async () => {
     setSaving(true)
-    setError("")
-    setSuccess("")
 
     try {
       const token = localStorage.getItem("token")
@@ -73,7 +67,7 @@ const StaffManager = () => {
       // Validate that all staff members have at least a name and role
       const isValid = staff.every((member) => member.name.trim() && member.role.trim())
       if (!isValid) {
-        setError(
+        showError(
           isKorean
             ? t("admin.staffValidationError")
             : "All staff members must have at least a name and role"
@@ -92,14 +86,14 @@ const StaffManager = () => {
       })
 
       if (response.ok) {
-        setSuccess(isKorean ? t("admin.success") : "Staff data updated successfully!")
+        showSuccess(isKorean ? t("admin.success") : "Staff data updated successfully!")
         fetchStaff() // Refresh the staff after saving
       } else {
         const data = await response.json()
-        setError(data.error || (isKorean ? t("admin.error") : "Failed to update staff data"))
+        showError(data.error || (isKorean ? t("admin.error") : "Failed to update staff data"))
       }
     } catch (error) {
-      setError(isKorean ? t("admin.networkError") : "Network error. Please try again.")
+      showError(isKorean ? t("admin.networkError") : "Network error. Please try again.")
     } finally {
       setSaving(false)
     }
@@ -117,10 +111,6 @@ const StaffManager = () => {
   return (
     <div className="mt-12">
       <h2 className="text-2xl font-bold mb-4">{isKorean ? t("admin.manageStaff") : "Manage Staff"}</h2>
-      {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
-      {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>
-      )}
       <div className="space-y-4">
         {staff.map((member, index) => (
           <div key={member.id || index} className="p-4 border rounded-md bg-gray-50">
