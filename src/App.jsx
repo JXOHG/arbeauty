@@ -16,8 +16,11 @@ import GalleryManager from "./components/GalleryManager.jsx"
 import Gallery from "./components/Gallery"
 import { LanguageProvider } from "./contexts/LanguageContext.jsx"
 
+
 import "./components/styles/animations.css"
 import { Helmet } from "react-helmet"
+
+const API_BASE_URL = import.meta.env.VITE_API_URL // <-- replace with whatever you use elsewhere for backend calls
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation()
@@ -42,7 +45,20 @@ function ScrollToTop() {
 function AppContent({ isLoggedIn, onLogout, onLogin }) {
   const location = useLocation()
   const isAdminPage = location.pathname === "/admin" || location.pathname === "/admin/gallery"
-  
+
+  // Record exactly one visit per browser tab, and never for admin/login traffic.
+  useEffect(() => {
+    if (isAdminPage || location.pathname === "/login") return
+    if (sessionStorage.getItem("ar_pageview_sent")) return
+    sessionStorage.setItem("ar_pageview_sent", "1")
+
+    fetch(`${API_BASE_URL}/api/analytics/pageview`, {
+      method: "POST",
+      credentials: "include", // required to send/receive the cross-origin visitor cookie
+    }).catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <div style={{ fontFamily: "'Jost', sans-serif", background: "#fafaf8" }}>
       <div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100 }}>
