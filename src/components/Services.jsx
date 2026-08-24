@@ -288,10 +288,14 @@ const Services = () => {
         <div className="services-texture" ref={parallaxBgRef} />
         <div className="services-inner">
           <div className="services-header reveal">
-            <span className="services-eyebrow">What We Offer</span>
-            <h2 className="services-title">
-              Our <em>Services</em>
-            </h2>
+            <span className="services-eyebrow">{t("services.eyebrow")}</span>
+<h2 className="services-title">
+  {language === "en-US" ? (
+    <>Our <em>Services</em></>
+  ) : (
+    t("services.title")
+  )}
+</h2>
             <div className="services-gold-divider">
               <div className="services-gold-line" />
               <div className="services-gold-dot" />

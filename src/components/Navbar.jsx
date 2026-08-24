@@ -21,6 +21,34 @@ const Navbar = ({ isLoggedIn, onLogout, isAdminPage = false }) => {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  useEffect(() => {
+  if (isMenuOpen) {
+    const scrollY = window.scrollY
+    document.body.style.position = "fixed"
+    document.body.style.top = `-${scrollY}px`
+    document.body.style.left = "0"
+    document.body.style.right = "0"
+    document.body.style.width = "100%"
+  } else {
+    const scrollY = document.body.style.top
+    document.body.style.position = ""
+    document.body.style.top = ""
+    document.body.style.left = ""
+    document.body.style.right = ""
+    document.body.style.width = ""
+    if (scrollY) {
+      window.scrollTo(0, parseInt(scrollY || "0") * -1)
+    }
+  }
+  return () => {
+    document.body.style.position = ""
+    document.body.style.top = ""
+    document.body.style.left = ""
+    document.body.style.right = ""
+    document.body.style.width = ""
+  }
+}, [isMenuOpen])
+
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
   const closeMenu = () => setIsMenuOpen(false)
 
@@ -57,6 +85,7 @@ const Navbar = ({ isLoggedIn, onLogout, isAdminPage = false }) => {
           z-index: 100;
           transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
           background: transparent;
+          max-width: 100vw;
         }
         .ar-navbar.scrolled {
           background: rgba(10, 10, 10, 0.97);
@@ -154,14 +183,16 @@ const Navbar = ({ isLoggedIn, onLogout, isAdminPage = false }) => {
           border-color: #c9a96e;
         }
         .hamburger-btn {
-          display: none;
-          flex-direction: column;
-          gap: 5px;
-          background: none;
-          border: none;
-          cursor: pointer;
-          padding: 4px;
-        }
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        position: relative;
+        z-index: 101;
+      }
         .hamburger-line {
           width: 24px;
           height: 1px;
@@ -188,6 +219,7 @@ const Navbar = ({ isLoggedIn, onLogout, isAdminPage = false }) => {
             top: 0; right: 0;
             height: 100vh;
             width: min(320px, 85vw);
+            max-width: 100vw;
             background: #0a0a0a;
             border-left: 1px solid rgba(201,169,110,0.15);
             flex-direction: column;

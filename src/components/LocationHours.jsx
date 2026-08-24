@@ -222,15 +222,19 @@ const LocationHours = () => {
       <section id="location" className="location-section" ref={sectionRef}>
         <div className="location-inner">
           <div className="location-header reveal">
-            <span className="location-eyebrow">Find Us</span>
-            <h2 className="location-title">
-              Location &amp; <em>Hours</em>
-            </h2>
+            <span className="location-eyebrow">{t("location.findUs")}</span>
+<h2 className="location-title">
+  {language === "en-US" ? (
+    <>Location &amp; <em>Hours</em></>
+  ) : (
+    t("location.title")
+  )}
+</h2>
           </div>
 
           <div className="location-grid">
             <div className="reveal-left">
-              <span className="location-block-label">Our Location</span>
+              <span className="location-block-label">{t("location.ourLocation")}</span>
               <p className="location-address">
                 Unit 103, 7191 Yonge St.<br />
                 Thornhill, ON L3T 0C4

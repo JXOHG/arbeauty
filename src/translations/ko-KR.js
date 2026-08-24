@@ -16,16 +16,20 @@ export const koKR = {
     },
     services: {
       title: "서비스 안내",
+      eyebrow: "제공 서비스",
       loading: "서비스 정보를 불러오는 중...",
       error: "서비스 정보를 불러오지 못했습니다",
     },
     staff: {
       title: "스태프 명단",
+      eyebrow: "아름다움을 만드는 사람들",
+      teamTitle: "우리 팀 소개",
       loading: "스태프 정보를 불러오는 중...",
     },
     location: {
       title: "위치 및 영업시간",
       ourLocation: "위치 안내",
+      findUs: "오시는 길",
       storeHours: "영업시간",
       viewOnGoogleMaps: "구글 지도에서 보기",
       loading: "영업시간을 불러오는 중...",
@@ -33,6 +37,7 @@ export const koKR = {
     contact: {
       title: "문의하기",
       getInTouch: "연락하기",
+      reachUs: "연락 방법",
       reachOut: "저희에게 연락해 주세요! 다음 방법으로 연락하실 수 있습니다:",
       email: "이메일",
       phone: "전화번호",

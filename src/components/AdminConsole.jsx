@@ -10,6 +10,7 @@ import StaffManager from "./StaffManager"
 import TranslationHelper from "./TranslationHelper"
 import { ToastContainer, useToast } from "./Toast"
 import { useLanguage } from "../contexts/LanguageContext"
+import VisitorAnalytics from "./VisitorAnalytics"
 
 // Create a context for toast notifications
 export const ToastContext = createContext(null)
@@ -137,9 +138,11 @@ const AdminConsole = () => {
           <ServicesManager />
           <StaffManager />
           <TranslationHelper />
+          <VisitorAnalytics />
         </div>
       </div>
     </ToastContext.Provider>
+    
   )
 }
 

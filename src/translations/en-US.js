@@ -16,16 +16,20 @@ export const enUS = {
     },
     services: {
       title: 'Our Services',
+      eyebrow: 'What We Offer',
       loading: 'Loading services...',
       error: 'Failed to load services'
     },
     staff: {
       title: 'Our Staff',
+      eyebrow: 'The People Behind the Beauty',   // add this
+      teamTitle: 'Meet Our Team',                // add this
       loading: 'Loading staff information...'
     },
     location: {
       title: 'Location & Hours',
       ourLocation: 'Our Location',
+      findUs: 'Find Us', 
       storeHours: 'Store Hours',
       viewOnGoogleMaps: 'View on Google Maps',
       loading: 'Loading hours...'
@@ -33,6 +37,7 @@ export const enUS = {
     contact: {
       title: 'Contact Us',
       getInTouch: 'Get in Touch',
+      reachUs: 'Reach Us', 
       reachOut: 'We\'d love to hear from you! Feel free to reach out through any of the following methods:',
       email: 'Email',
       phone: 'Phone',

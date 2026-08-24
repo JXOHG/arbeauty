@@ -14,7 +14,7 @@ const Contact = () => {
   const [status, setStatus] = useState("")
   const [statusType, setStatusType] = useState("") // 'success' | 'error'
   const [isOnMobile, setIsOnMobile] = useState(isMobile())
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
 
   useEffect(() => {
     const handleResize = () => setIsOnMobile(isMobile())
@@ -294,16 +294,20 @@ const Contact = () => {
         <div className="contact-bg-pattern" />
         <div className="contact-inner">
           <div className="contact-header reveal">
-            <span className="contact-eyebrow">Get In Touch</span>
-            <h2 className="contact-title">
-              Contact <em>Us</em>
-            </h2>
+            <span className="contact-eyebrow">{t("contact.getInTouch")}</span>
+<h2 className="contact-title">
+  {language === "en-US" ? (
+    <>Contact <em>Us</em></>
+  ) : (
+    t("contact.title")
+  )}
+</h2>
           </div>
 
           <div className="contact-grid">
             {/* Left: contact info */}
             <div className="reveal-left">
-              <span className="contact-info-label">Reach Us</span>
+              <span className="contact-info-label">{t("contact.reachUs")}</span>
 
               <div className="contact-info-item">
                 <span className="contact-info-key">{t("contact.email")}</span>
@@ -343,7 +347,7 @@ const Contact = () => {
 
             {/* Right: form */}
             <div className="reveal-right">
-              <span className="contact-form-label">Send a Message</span>
+              <span className="contact-form-label">{t("contact.sendMessage")}</span>
               <form ref={form} onSubmit={sendEmail}>
                 <div className="form-field">
                   <label htmlFor="user_name" className="form-field-label">{t("contact.name")}</label>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { Link as ScrollLink } from "react-scroll"
 import { useLanguage } from "../contexts/LanguageContext"
 
 const Hero = () => {
@@ -226,12 +227,12 @@ const Hero = () => {
           </h1>
           <p className="hero-tagline">{t("hero.experience")}</p>
           <div className="hero-cta-wrap">
-            <a href="#services" className="hero-cta-primary">
+            <ScrollLink to="services" smooth={true} duration={700} className="hero-cta-primary">
               <span className="hero-cta-span">{t("navbar.services")}</span>
-            </a>
-            <a href="#contact" className="hero-cta-primary">
+            </ScrollLink>
+            <ScrollLink to="contact" smooth={true} duration={700} className="hero-cta-primary">
               <span className="hero-cta-span">{t("navbar.contact")}</span>
-            </a>
+            </ScrollLink>
           </div>
         </div>
 

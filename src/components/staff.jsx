@@ -7,7 +7,7 @@ import { useLanguage } from "../contexts/LanguageContext"
 const Staff = () => {
   const [staffMembers, setStaffMembers] = useState([])
   const [loading, setLoading] = useState(true)
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const parallaxRef = useRef(null)
   const sectionRef = useRef(null)
 
@@ -194,10 +194,14 @@ const Staff = () => {
 
         <div className="staff-inner">
           <div className="staff-header reveal">
-            <span className="staff-eyebrow">The People Behind the Beauty</span>
-            <h2 className="staff-title">
-              Meet Our <em>Team</em>
-            </h2>
+            <span className="staff-eyebrow">{t("staff.eyebrow")}</span>
+<h2 className="staff-title">
+  {language === "en-US" ? (
+    <>Meet Our <em>Team</em></>
+  ) : (
+    t("staff.teamTitle")
+  )}
+</h2>
           </div>
 
           {loading ? (
